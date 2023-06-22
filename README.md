@@ -1,6 +1,8 @@
 # schanz-rolladen-raspi
 Remote Control 433MHz Schanz Rolladen with Raspi
 
+** Status: WIP **
+
 
 # How to reverse engineer
 
@@ -22,6 +24,19 @@ sudo reboot
 + Play back using `sudo ./sendiq -s 250000 -f 433.9500e6 -t u8 -i record.iq` (without wire antenna on GPIO7, so that the range is only in centimeters)
 + I checked the output using my Yaesu FT 817
 + One working save the record.iq file to buttonX.iq and continue with the next button.
+
+
+
+# Installing the MQTT service
++ `pip3 install -r requirements.txt`
+
+# Testing the installation
++ Install mosquitto, i.e. on osx: `brew install mosquitto`
+```
+mosquitto_pub -h t20 -t rollershutter/control/Test1 -m <Up|Down|Stop|Percent>
+mosquitto_sub -h t20 -t rollershutter/Test1/percentage
+```
+
 
 
 # References
