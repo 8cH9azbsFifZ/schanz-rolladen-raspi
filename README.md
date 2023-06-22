@@ -2,5 +2,27 @@
 Remote Control 433MHz Schanz Rolladen with Raspi
 
 
+# How to reverse engineer
 
-sudo ./sendiq -s 250000 -f 433.9500e6 -t u8 -i button2.iq
++ Frequency Range of the remote control is at about 433.950 MHz (Found out pressing one button while tuning with my Yaesu FT 817)
++ Connect a RTL SDR to a raspi
+
+## Prepare the raspi
+```
+sudo apt-get update
+sudo apt-get install git
+git clone https://github.com/F5OEO/rpitx
+cd rpitx
+./install.sh
+sudo reboot
+```
+
+## Store the button signals
++ Start copying the button signals using `./rtlmenu.sh`: Record, set frequency (433.950 in my case), set gain to 0 (AGC), record.
++ Play back using `sudo ./sendiq -s 250000 -f 433.9500e6 -t u8 -i record.iq` (without wire antenna on GPIO7, so that the range is only in centimeters)
++ I checked the output using my Yaesu FT 817
++ One working save the record.iq file to buttonX.iq and continue with the next button.
+
+
+# References
+- https://hagensieker.com/2019/01/12/rpitx-replay-attack-on-ge-myselectsmart-remote-control-outlet/
