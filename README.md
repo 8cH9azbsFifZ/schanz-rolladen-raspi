@@ -37,3 +37,5 @@ mosquitto_sub -h t20 -t rollershutter/Test1/percentage
 
 # References
 - https://hagensieker.com/2019/01/12/rpitx-replay-attack-on-ge-myselectsmart-remote-control-outlet/
+- RTL SDR IQ Format: *.cu8 - Complex 8-bit unsigned integer samples (RTL-SDR) https://k3xec.com/packrat-processing-iq/
+- Formats https://github.com/glv2/convert-samples

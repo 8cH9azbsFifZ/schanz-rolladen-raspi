@@ -7,7 +7,10 @@ logging.basicConfig(level=logging.DEBUG, format='Rollershutter(%(threadName)-10s
 
 class Rollershutter():
     frequency = "433.9500e6"
+    samplerate = "250000"
     data_path = "/home/pi/schanz-rolladen-raspi/data"
+    #-t u8           IQ type (i16 default) {i16,u8,float,double}\n\
+
 
     def __init__(self, TimeOpen = 53. , TimeClose = 53., MQTThostname = "t20", RollershutterName="Test1", simulation=True):
         self._simulation = simulation
