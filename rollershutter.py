@@ -105,9 +105,11 @@ class Rollershutter():
     def Stop(self):
         logging.debug("Rollershutter: stop")
         if self._moving_open:
+            logging.debug("Rollershutter: stop - by pressing close button")
             self._press_button_close()
             self._moving_open = False
         if self._moving_close:
+            logging.debug("Rollershutter: stop - by pressing open button")
             self._press_button_open()
             self._moving_close = False                
 
