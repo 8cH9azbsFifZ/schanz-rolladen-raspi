@@ -1,10 +1,14 @@
 import time
 import paho.mqtt.client as mqtt
 import logging
+import subprocess
 
 logging.basicConfig(level=logging.DEBUG, format='Rollershutter(%(threadName)-10s) %(message)s')
 
 class Rollershutter():
+    frequency = "433.9500e6"
+    data_path = "/home/pi/schanz-rolladen-raspi/data"
+
     def __init__(self, TimeUpwards = 10. , TimeDownwards = 10., MQTThostname = "t20", RollershutterName="Test1"):
 
         # Connect to MQTT broker
@@ -21,10 +25,14 @@ class Rollershutter():
         self._moving_upwards = False # Current movement upwards?
         self._moving_downwards = False 
         self._time_upwards = TimeUpwards
+        self._velocity_upwards = 1./TimeUpwards
         self._time_downwards = TimeDownwards
+        self._velocity_downwards = 1./TimeDownwards
 
         # Timers
         self._time_lastcommand = time.time()
+        self._time_t0 = time.time()
+        self._time_t1 = time.time()
 
     def _on_connect(self, client, userdata, flags, rc):
         """ Connect to MQTT broker and subscribe to control messages """
@@ -57,28 +65,40 @@ class Rollershutter():
 
     def _calc_current_percentage (self):
         curtime = time.time()
-        dt = curtime - self._time_lastcommand
+        self._time_t0 = self._time_t1
+        self._time_t1 = curtime
+        dt = self._time_t1 - self._time_t0
         if self._moving_downwards:
-            self._percentage = min(dt / self._time_downwards, 1.0)
+            moved_percentage = dt * self._velocity_downwards
+            self._percentage -= moved_percentage 
+            if self._percentage < 0.0:
+                self._percentage = 0.0
+                self._moving_downwards = False
         if self._moving_upwards:
-            self._percentage = min(dt / self._time_upwards, 1.0)  
+            moved_percentage = dt * self._velocity_upwards
+            self._percentage += moved_percentage 
+            if self._percentage > 1.0:
+                self._percentage = 1.0
+                self._moving_upwards = False
         
     def Down(self):
         logging.debug("Rollershutter: down")
         self._moving_downwards = True
-
+        self._press_button_up()
 
     def Up(self):
         logging.debug("Rollershutter: up")
         self._moving_upwards = True
-      
+        self._press_button_up()
 
     def Stop(self):
         logging.debug("Rollershutter: stop")
-        self._moving_upwards = False
-        self._moving_downwards = False
-        # TODO implement
-        pass
+        if self._moving_upwards:
+            self._press_button_down()
+            self._moving_upwards = False
+        if self._moving_downwards:
+            self._press_button_up()
+            self._moving_downwards = False                
 
     def Percent(self, percentage):
         logging.debug("Rollershutter: percent")
@@ -91,15 +111,14 @@ class Rollershutter():
             self._calc_current_percentage()
             self._sendmessage(topic="/percentage", message=str(self._percentage))
 
+    def _press_button_up(self):
+        subprocess.run(['/usr/bin/sendiq', "-s", "250000" ,"-f", self.frequency, "-t", "u8", "-i", self.data_path+"/button1.iq"])
+    
+    def _press_button_down(self):
+        subprocess.run(['/usr/bin/sendiq', "-s", "250000" ,"-f", self.frequency, "-t", "u8", "-i", self.data_path+"/button2.iq"])
+
 
 if __name__ == "__main__":
     print ("Run manual")
     r = Rollershutter()
-    #r._relais_on(r._relais1_pin)
-    #time.sleep(1)
-    #r._relais_off(r._relais1_pin)
-    #time.sleep(1)
-    #r._relais_on(r._relais2_pin)
-    #time.sleep(1)
-    #r._relais_off(r._relais2_pin)
     r._core_loop()
