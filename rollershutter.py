@@ -9,7 +9,8 @@ class Rollershutter():
     frequency = "433.9500e6"
     data_path = "/home/pi/schanz-rolladen-raspi/data"
 
-    def __init__(self, TimeUpwards = 10. , TimeDownwards = 10., MQTThostname = "t20", RollershutterName="Test1"):
+    def __init__(self, TimeUpwards = 53. , TimeDownwards = 53., MQTThostname = "t20", RollershutterName="Test1", simulation=True):
+        self._simulation = simulation
 
         # Connect to MQTT broker
         port = 1883
@@ -22,6 +23,7 @@ class Rollershutter():
         # Current state
         self.Name = RollershutterName
         self._percentage = 0
+        self._target_percentage = 0
         self._moving_upwards = False # Current movement upwards?
         self._moving_downwards = False 
         self._time_upwards = TimeUpwards
@@ -56,12 +58,17 @@ class Rollershutter():
         self._time_lastcommand = time.time()
         if msg.payload.decode() == "Stop":
             self.Stop()
+            return 
         if msg.payload.decode() == "Up":
             self.Up()
+            return
         if msg.payload.decode() == "Down":
             self.Down()
-        if msg.payload.decode() == "Percent": # FIXME
-            self.Percent()
+            return
+        #if msg.payload.decode() == "Percent": 
+        percent = float(msg.payload.decode()) / 100.
+        if 0.0 <= percent <= 1.0:
+            self.Percent(percent)
 
     def _calc_current_percentage (self):
         curtime = time.time()
@@ -71,24 +78,28 @@ class Rollershutter():
         if self._moving_downwards:
             moved_percentage = dt * self._velocity_downwards
             self._percentage -= moved_percentage 
-            if self._percentage < 0.0:
-                self._percentage = 0.0
+            if self._percentage < self._target_percentage: #0.0:
+                self._percentage = self._target_percentage  #0.0
                 self._moving_downwards = False
+                self._sendmessage(topic="/percentage", message=str(self._percentage))
         if self._moving_upwards:
             moved_percentage = dt * self._velocity_upwards
             self._percentage += moved_percentage 
-            if self._percentage > 1.0:
-                self._percentage = 1.0
+            if self._percentage > self._target_percentage:  #1.0:
+                self._percentage = self._target_percentage #1.0
                 self._moving_upwards = False
+                self._sendmessage(topic="/percentage", message=str(self._percentage))
         
-    def Down(self):
+    def Down(self, target_percent = 0.0):
         logging.debug("Rollershutter: down")
         self._moving_downwards = True
+        self._target_percentage = target_percent
         self._press_button_up()
 
-    def Up(self):
+    def Up(self, target_percent = 1.0):
         logging.debug("Rollershutter: up")
         self._moving_upwards = True
+        self._target_percentage = target_percent
         self._press_button_up()
 
     def Stop(self):
@@ -101,27 +112,34 @@ class Rollershutter():
             self._moving_downwards = False                
 
     def Percent(self, percentage):
-        logging.debug("Rollershutter: percent")
-        # TODO implement
-        pass
+        logging.debug("Rollershutter: set to percent " + str(percentage))
+        diff_percent = self._percentage - percentage
+        if diff_percent > 0:
+            self.Down(target_percent=percentage)
+        if diff_percent < 0:
+            self.Up(target_percent=percentage)
+
 
     def _core_loop(self):
         logging.debug("Start core loop")
         while True:
             self._client.loop(self._samplingrate) #blocks for 100ms (or whatever variable given, default 1s)
             self._calc_current_percentage()
-            self._sendmessage(topic="/percentage", message=str(self._percentage))
+            if self._moving_downwards or self._moving_upwards:
+                self._sendmessage(topic="/percentage", message=str(self._percentage))
 
     def _press_button_up(self):
         logging.debug("Send button up signal")
-        subprocess.run(['/usr/bin/sendiq', "-s", "250000" ,"-f", self.frequency, "-t", "u8", "-i", self.data_path+"/button1.iq"])
+        if not self._simulation:
+            subprocess.run(['/usr/bin/sendiq', "-s", "250000" ,"-f", self.frequency, "-t", "u8", "-i", self.data_path+"/button1.iq"])
     
     def _press_button_down(self):
         logging.debug("Send button down signal")
-        subprocess.run(['/usr/bin/sendiq', "-s", "250000" ,"-f", self.frequency, "-t", "u8", "-i", self.data_path+"/button2.iq"])
+        if not self._simulation:
+            subprocess.run(['/usr/bin/sendiq', "-s", "250000" ,"-f", self.frequency, "-t", "u8", "-i", self.data_path+"/button2.iq"])
 
 
 if __name__ == "__main__":
     print ("Run manual")
-    r = Rollershutter()
+    r = Rollershutter(TimeUpwards=5, TimeDownwards=5)
     r._core_loop()
