@@ -94,7 +94,7 @@ class Rollershutter():
         logging.debug("Rollershutter: close")
         self._moving_close = True
         self._target_percentage = target_percent
-        self._press_button_open()
+        self._press_button_close()
 
     def Open(self, target_percent = 1.0):
         logging.debug("Rollershutter: open")
