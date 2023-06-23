@@ -116,9 +116,9 @@ class Rollershutter():
     def Percent(self, percentage):
         logging.debug("Rollershutter: set to percent " + str(percentage))
         diff_percent = self._percentage - percentage
-        if diff_percent > 0:
-            self.Close(target_percent=percentage)
         if diff_percent < 0:
+            self.Close(target_percent=percentage)
+        if diff_percent > 0:
             self.Open(target_percent=percentage)
 
 
