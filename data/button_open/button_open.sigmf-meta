@@ -1,0 +1,16 @@
+{
+    "global": {
+        "core:datatype": "cu8_le",
+        "core:sample_rate": 250000,
+        "core:hw": "RTL SDR",
+        "core:author": "GZ",
+        "core:version": "1.0.0"
+    },
+    "captures": [
+        {
+            "core:sample_start": 0,
+            "core:frequency": 433950000
+        }
+    ],
+    "annotations": []
+}
