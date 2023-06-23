@@ -52,18 +52,18 @@ class Rollershutter():
         """
         Receive MQTT control messages.
         Start with debugging on commandline using:
-        mosquitto_pub -h t20 -t rollershutter/control/Test1 -m Down
+        mosquitto_pub -h t20 -t rollershutter/control/Test1 -m Close
         """
         logging.debug(">MQTT: " + msg.payload.decode())
         self._time_lastcommand = time.time()
         if msg.payload.decode() == "Stop":
             self.Stop()
             return 
-        if msg.payload.decode() == "Up":
-            self.Up()
+        if msg.payload.decode() == "Open":
+            self.Open()
             return
-        if msg.payload.decode() == "Down":
-            self.Down()
+        if msg.payload.decode() == "Close":
+            self.Close()
             return
         #if msg.payload.decode() == "Percent": 
         percent = float(msg.payload.decode()) / 100.
@@ -90,14 +90,14 @@ class Rollershutter():
                 self._moving_open = False
                 self._sendmessage(topic="/percentage", message=str(self._percentage))
         
-    def Down(self, target_percent = 0.0):
-        logging.debug("Rollershutter: down")
+    def Close(self, target_percent = 0.0):
+        logging.debug("Rollershutter: close")
         self._moving_close = True
         self._target_percentage = target_percent
         self._press_button_open()
 
-    def Up(self, target_percent = 1.0):
-        logging.debug("Rollershutter: up")
+    def Open(self, target_percent = 1.0):
+        logging.debug("Rollershutter: open")
         self._moving_open = True
         self._target_percentage = target_percent
         self._press_button_open()
@@ -115,9 +115,9 @@ class Rollershutter():
         logging.debug("Rollershutter: set to percent " + str(percentage))
         diff_percent = self._percentage - percentage
         if diff_percent > 0:
-            self.Down(target_percent=percentage)
+            self.Close(target_percent=percentage)
         if diff_percent < 0:
-            self.Up(target_percent=percentage)
+            self.Open(target_percent=percentage)
 
 
     def _core_loop(self):
