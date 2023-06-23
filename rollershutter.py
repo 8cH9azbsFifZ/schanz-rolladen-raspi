@@ -90,13 +90,13 @@ class Rollershutter():
                 self._moving_open = False
                 self._sendmessage(topic="/percentage", message=str(self._percentage))
         
-    def Close(self, target_percent = 0.0):
+    def Close(self, target_percent = 1.0):
         logging.debug("Rollershutter: close")
         self._moving_close = True
         self._target_percentage = target_percent
         self._press_button_close()
 
-    def Open(self, target_percent = 1.0):
+    def Open(self, target_percent = 0.0):
         logging.debug("Rollershutter: open")
         self._moving_open = True
         self._target_percentage = target_percent
