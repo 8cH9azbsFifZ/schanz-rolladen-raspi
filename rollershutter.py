@@ -106,15 +106,18 @@ class Rollershutter():
         pass
 
     def _core_loop(self):
+        logging.debug("Start core loop")
         while True:
             self._client.loop(self._samplingrate) #blocks for 100ms (or whatever variable given, default 1s)
             self._calc_current_percentage()
             self._sendmessage(topic="/percentage", message=str(self._percentage))
 
     def _press_button_up(self):
+        logging.debug("Send button up signal")
         subprocess.run(['/usr/bin/sendiq', "-s", "250000" ,"-f", self.frequency, "-t", "u8", "-i", self.data_path+"/button1.iq"])
     
     def _press_button_down(self):
+        logging.debug("Send button down signal")
         subprocess.run(['/usr/bin/sendiq', "-s", "250000" ,"-f", self.frequency, "-t", "u8", "-i", self.data_path+"/button2.iq"])
 
 
