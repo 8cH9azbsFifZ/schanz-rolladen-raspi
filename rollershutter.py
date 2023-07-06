@@ -2,6 +2,7 @@ import time
 import paho.mqtt.client as mqtt
 import logging
 import subprocess
+import sys, getopt
 
 logging.basicConfig(level=logging.DEBUG, format='Rollershutter(%(threadName)-10s) %(message)s')
 
@@ -54,24 +55,27 @@ class Rollershutter():
     def _on_message(self, client, userdata, msg):
         """
         Receive MQTT control messages.
-        Start with debugging on commandline using:
-        mosquitto_pub -h t20 -t rollershutter/control/Test1 -m Close
         """
         logging.debug(">MQTT: " + msg.payload.decode())
         self._time_lastcommand = time.time()
         if msg.payload.decode() == "Stop":
             self.Stop()
             return 
-        if msg.payload.decode() == "Open":
+        elif msg.payload.decode() == "Open":
             self.Open()
             return
-        if msg.payload.decode() == "Close":
+        elif msg.payload.decode() == "Close":
             self.Close()
             return
-        #if msg.payload.decode() == "Percent": 
-        percent = float(msg.payload.decode()) / 100.
-        if 0.0 <= percent <= 1.0:
-            self.Percent(percent)
+        elif msg.payload.decode().isdigit():
+            #if msg.payload.decode() == "Percent": 
+            percent = float(msg.payload.decode()) / 100.
+            if 0.0 <= percent <= 1.0:
+                self.Percent(percent)
+            else:
+                logging.debug("  parameter not in range: " + msg.payload.decode())
+        else:
+            logging.debug("  parameter not valid: " + msg.payload.decode())
 
     def _calc_current_percentage (self):
         curtime = time.time()
@@ -150,6 +154,20 @@ class Rollershutter():
 
 if __name__ == "__main__":
     print ("Run manual")
-    r = Rollershutter(TimeOpen=5, TimeClose=5)
-    r = Rollershutter(simulation=False)
+    simulation = False
+    TimeOpen = 53
+    TimeClose = 53
+
+    opts, args = getopt.getopt(sys.argv[1:],"hs", ["simulation"])
+    for opt, arg in opts:
+        if opt == '-h':
+            print ('rollershutter.py -s')
+            sys.exit()
+        elif opt in ("-s", "--simulation"):
+            simulation = True
+            TimeOpen=5
+            TimeClose=5
+
+    #r = Rollershutter()
+    r = Rollershutter(TimeOpen=TimeOpen, TimeClose=TimeClose, simulation=simulation)
     r._core_loop()
