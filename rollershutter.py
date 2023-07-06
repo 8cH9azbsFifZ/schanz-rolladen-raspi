@@ -146,12 +146,12 @@ class Rollershutter():
     def _press_button_open(self):
         logging.debug("Send button open signal")
         if not self._simulation:
-            subprocess.Popen(['/usr/bin/sendiq', "-s", "250000" ,"-f", self.frequency, "-t", "u8", "-i", self.data_path+"/button_open.iq"])
+            subprocess.run(['/usr/bin/sendiq', "-s", "250000" ,"-f", self.frequency, "-t", "u8", "-i", self.data_path+"/button_open.iq"])
     
     def _press_button_close(self):
         logging.debug("Send button close signal")
         if not self._simulation:
-            subprocess.Popen(['/usr/bin/sendiq', "-s", "250000" ,"-f", self.frequency, "-t", "u8", "-i", self.data_path+"/button_close.iq"])
+            subprocess.run(['/usr/bin/sendiq', "-s", "250000" ,"-f", self.frequency, "-t", "u8", "-i", self.data_path+"/button_close.iq"])
 
 
 if __name__ == "__main__":
