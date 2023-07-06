@@ -1,0 +1,12 @@
+[Unit]
+Description=Rollershutter service
+After=multi-user.target
+
+[Service]
+Type=simple
+Restart=always
+WorkingDirectory=/home/pi/schanz-rolladen-raspi/
+ExecStart=/usr/bin/python3 /home/pi/schanz-rolladen-raspi/rollershutter.py
+
+[Install]
+WantedBy=multi-user.target

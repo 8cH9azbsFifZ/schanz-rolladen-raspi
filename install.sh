@@ -12,4 +12,11 @@ cd
 git clone https://github.com/8cH9azbsFifZ/schanz-rolladen-raspi.git
 pip3 install -r requirements.txt
 
+cd schanz-rolladen-raspi
+sudo cp rollershutter.service /etc/systemd/system/test.service
+sudo systemctl daemon-reload
+sudo systemctl enable test.service
+sudo systemctl start test.service
+
+
 sudo reboot
