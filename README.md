@@ -35,6 +35,7 @@ mosquitto_sub -h t20 -t rollershutter/Test1/percentage
 + Play back using `sudo ./sendiq -s 250000 -f 433.9500e6 -t u8 -i record.iq` (without wire antenna on GPIO7, so that the range is only in centimeters)
 + I checked the output using my Yaesu FT 817
 + One working save the record.iq file to buttonX.iq and continue with the next button.
++ You may shorten the signals afterwars using simply `dd if=button_close.iq of=button_close_short.iq bs=8 count=20000`
 
 
 # References
