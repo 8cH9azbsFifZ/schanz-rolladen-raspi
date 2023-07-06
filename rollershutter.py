@@ -88,8 +88,8 @@ class Rollershutter():
             if self._percentage > self._target_percentage: #0.0:
                 self._percentage = self._target_percentage  #0.0
                 self._moving_close = False
-                #if self._moving_close: # TODO
-                #    self.Stop()
+                if self._moving_close: # TODO
+                    self.Stop()
                 self._sendmessage(topic="/percentage", message=str(self._percentage))
         if self._moving_open:
             moved_percentage = dt * self._velocity_open
@@ -97,8 +97,8 @@ class Rollershutter():
             if self._percentage < self._target_percentage:  #1.0:
                 self._percentage = self._target_percentage #1.0
                 self._moving_open = False 
-                #if self._moving_open: # TODO
-                #    self.Stop()
+                if self._moving_open: # TODO
+                    self.Stop()
                 self._sendmessage(topic="/percentage", message=str(self._percentage))
         
     def Close(self, target_percent = 1.0):
@@ -119,10 +119,12 @@ class Rollershutter():
             logging.debug("Rollershutter: stop - by pressing close button")
             self._press_button_close()
             self._moving_open = False
-        if self._moving_close:
+        elif self._moving_close:
             logging.debug("Rollershutter: stop - by pressing open button")
             self._press_button_open()
-            self._moving_close = False                
+            self._moving_close = False      
+        else:
+            logging.debug("Rollershutter: not moving")
 
     def Percent(self, percentage):
         logging.debug("Rollershutter: set to percent " + str(percentage))
