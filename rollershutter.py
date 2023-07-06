@@ -85,16 +85,16 @@ class Rollershutter():
         if self._moving_close:
             moved_percentage = dt * self._velocity_close
             self._percentage += moved_percentage 
-            if self._percentage > self._target_percentage: #0.0:
-                self._percentage = self._target_percentage  #0.0
+            if self._percentage > self._target_percentage and not self._target_percentage == 100.0: 
+                self._percentage = self._target_percentage
                 if self._moving_close: # TODO
                     self.Stop()
                 self._sendmessage(topic="/percentage", message=str(self._percentage))
         if self._moving_open:
             moved_percentage = dt * self._velocity_open
             self._percentage -= moved_percentage 
-            if self._percentage < self._target_percentage:  #1.0:
-                self._percentage = self._target_percentage #1.0
+            if self._percentage < self._target_percentage and not self._target_percentage == 0.0: 
+                self._percentage = self._target_percentage
                 if self._moving_open: # TODO
                     self.Stop()
                 self._sendmessage(topic="/percentage", message=str(self._percentage))
