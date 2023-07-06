@@ -49,7 +49,7 @@ class Rollershutter():
         """ Send a message using MQTT """
         ttopic = "rollershutter/" + self.Name + topic
         mmessage = str(message)
-        logging.debug("MQTT>: " + ttopic + " ###> " + mmessage)
+        #logging.debug("MQTT>: " + ttopic + " ###> " + mmessage)
         self._client.publish(ttopic, mmessage)
 
     def _on_message(self, client, userdata, msg):
