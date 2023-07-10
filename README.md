@@ -26,7 +26,7 @@ mosquitto_sub -h t20 -t rollershutter/Test1/percentage
 
 + Frequency Range of the remote control is at about 433.950 MHz (Found out pressing one button while tuning with my Yaesu FT 817)
 + Connect a RTL SDR to a raspi
-(doc/raspi_rtl.png)
+![Raspi with RTL SDR](doc/raspi_rtl.png)
 
 ## Prepare the raspi
 + Installation script: `./install.sh`
@@ -48,7 +48,7 @@ Yields: Use a flex decoder with -X 'n=name,m=OOK_PWM,s=348,l=2076,r=15740,g=1984
 
   [04] {18} 15 1d c0  : 00010101 00011101 11
 
-(doc/pulse_close.png)
+![Close Button Pulse](doc/pulse_close.png)
 
 ### Open Button
 + `rtl_433 -A -r 250k:433.95M:cu8:button_open.iq`
@@ -57,7 +57,7 @@ Yields: Use a flex decoder with -X 'n=name,m=OOK_PWM,s=332,l=2064,r=15748,g=2004
 
   [04] {18} 15 1d 40  : 00010101 00011101 01
 
-(doc/pulse_open.png)
+![Open Button Pulse](doc/pulse_open.png)
 
 
 
