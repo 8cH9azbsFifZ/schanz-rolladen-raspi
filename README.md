@@ -62,6 +62,12 @@ Yields: Use a flex decoder with -X 'n=name,m=OOK_PWM,s=332,l=2064,r=15748,g=2004
 
 
 
+# Testing with minicul
+- https://github.com/RFD-FHEM/SIGNALDuino/releases
+sudo avrdude -c arduino -b57600 -P /dev/ttyUSB0 -p atmega328p -vv -U SIGNALDuino_miniculcc1101_3.5.0.hex
+picocom /dev/ttyUSB0 -b 57600
+- https://github.com/RFD-FHEM/SIGNALDuino/wiki/Commands
+
 
 # References
 - https://hagensieker.com/2019/01/12/rpitx-replay-attack-on-ge-myselectsmart-remote-control-outlet/
@@ -69,3 +75,4 @@ Yields: Use a flex decoder with -X 'n=name,m=OOK_PWM,s=332,l=2064,r=15748,g=2004
 - Formats https://github.com/glv2/convert-samples
 - RTL 433 Tool https://github.com/merbanan/rtl_433
 - The motor is a Siral EL4F motor with 433 MHz remote control
+
