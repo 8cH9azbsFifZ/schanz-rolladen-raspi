@@ -18,6 +18,21 @@ Remote Control 433MHz Schanz Rolladen with Raspi
 + `git clone https://github.com/8cH9azbsFifZ/schanz-rolladen-raspi.git`
 + `cd schanz-rolladen-raspi/ && pip3 install -r requirements.txt`
 
+## Installing the service
+```
+sudo cp rollershutter.service /etc/systemd/system/rollershutter.service
+sudo systemctl daemon-reload
+sudo systemctl enable rollershutter.service
+sudo systemctl start rollershutter.service
+
+```
+
+### Uninstalling the service
+```
+sudo systemctl stop rollershutter.service
+sudo systemctl disable rollershutter.service
+sudo rm  /etc/systemd/system/rollershutter.service
+```
 
 # Testing the installation
 + Install mosquitto, i.e. on osx: `brew install mosquitto`
@@ -38,7 +53,17 @@ mosquitto_sub -h t20 -t rollershutter/Test1/percentage
 ![Raspi with RTL SDR](doc/raspi_rtl.png)
 
 ## Prepare the raspi
-+ Installation script: `./install.sh`
++ Installation script: 
+
+```
+
+git clone https://github.com/F5OEO/rpitx
+cd rpitx
+./install.sh
+
+sudo chmod +s /usr/bin/sendiq
+
+```
 
 ## Store the button signals
 + Start copying the button signals using `./rtlmenu.sh`: Record, set frequency (433.950 in my case), set gain to 0 (AGC), record.
