@@ -21,7 +21,7 @@ class Rollershutter():
         # Configure PINS
         self._relais_sw_up_pin = PIN_BCM_Up 
         self._relais_sw_down_pin = PIN_BCM_Down 
-        self._sw_press_duration = 1 # 1 second press the buttons before release
+        self._sw_press_duration = .5 # 1 second press the buttons before release
         GPIO.setmode(GPIO.BCM)
         time.sleep(1)
         GPIO.setup(self._relais_sw_up_pin, GPIO.OUT) 
