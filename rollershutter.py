@@ -146,7 +146,6 @@ class Rollershutter():
         if diff_percent > 0:
             self.Open(target_percent=percentage)
 
-
     def _core_loop(self):
         logging.debug("Start core loop")
         while True:
@@ -154,6 +153,12 @@ class Rollershutter():
             self._calc_current_percentage()
             if self._moving_close or self._moving_open:
                 self._sendmessage(topic="/percentage", message=str(self._percentage))
+
+    def _press_button_open(self):
+        self._press_button_open_relais()
+
+    def _press_button_close(self):
+        self._press_button_close_relais()
 
     def _press_button_open_sdr(self):
         logging.debug("Send button open signal")

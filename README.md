@@ -3,7 +3,7 @@ Remote Control 433MHz Schanz Rolladen with Raspi
 
 ** Status: WIP **
 
-- Experimental SDR on PIN7 using 433.9 MHz transmission
+- Experimental SDR on PIN7 using 433.9 MHz transmission (dead code as of 0.0.3)
 - Experimental relais controls on pins 16 and 18
 
 
