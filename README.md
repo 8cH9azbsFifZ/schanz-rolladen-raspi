@@ -4,11 +4,17 @@ Remote Control 433MHz Schanz Rolladen with Raspi
 ** Status: WIP **
 
 
+# Wiring the USB relais
++ PIN Down: BCM 23 (PIN 18)
++ PIN Up: BCM 24 (PIN 16)
 
 
 
 # Installing the MQTT service
++ Prepare a raspi with a fresh raspian
++ `apt-get -y install python3-pip`
 + `pip3 install -r requirements.txt`
+
 
 # Testing the installation
 + Install mosquitto, i.e. on osx: `brew install mosquitto`
