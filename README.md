@@ -20,6 +20,10 @@ Remote Control 433MHz Schanz Rolladen with Raspi
 
 ## Installing the service
 ```
+cd /opt
+sudo git clone https://github.com/8cH9azbsFifZ/schanz-rolladen-raspi.git
+cd schanz-rolladen-raspi
+sudo pip3 install -r requirements.txt
 sudo cp rollershutter.service /etc/systemd/system/rollershutter.service
 sudo systemctl daemon-reload
 sudo systemctl enable rollershutter.service
