@@ -112,5 +112,6 @@ picocom /dev/ttyUSB0 -b 57600
 - RTL SDR IQ Format: *.cu8 - Complex 8-bit unsigned integer samples (RTL-SDR) https://k3xec.com/packrat-processing-iq/
 - Formats https://github.com/glv2/convert-samples
 - RTL 433 Tool https://github.com/merbanan/rtl_433
-- The motor is a Siral EL4F motor with 433 MHz remote control
+- The motor is a Siral EL4F motor with 433 MHz remote control: https://www.siral.de/index.php?id=127
+
 - Using a realais: https://blog.berrybase.de/blog/2020/08/12/relais-steuerung-mit-dem-raspberry-pi-so-funktionierts/
