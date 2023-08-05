@@ -75,4 +75,4 @@ picocom /dev/ttyUSB0 -b 57600
 - Formats https://github.com/glv2/convert-samples
 - RTL 433 Tool https://github.com/merbanan/rtl_433
 - The motor is a Siral EL4F motor with 433 MHz remote control
-
+- Using a realais: https://blog.berrybase.de/blog/2020/08/12/relais-steuerung-mit-dem-raspberry-pi-so-funktionierts/
