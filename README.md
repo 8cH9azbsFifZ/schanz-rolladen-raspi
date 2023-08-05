@@ -3,17 +3,20 @@ Remote Control 433MHz Schanz Rolladen with Raspi
 
 ** Status: WIP **
 
+- Experimental SDR on PIN7 using 433.9 MHz transmission
+- Experimental relais controls on pins 16 and 18
+
 
 # Wiring the USB relais
 + PIN Down: BCM 23 (PIN 18)
 + PIN Up: BCM 24 (PIN 16)
 
 
-
 # Installing the MQTT service
 + Prepare a raspi with a fresh raspian
 + `apt-get -y install python3-pip`
-+ `pip3 install -r requirements.txt`
++ `git clone https://github.com/8cH9azbsFifZ/schanz-rolladen-raspi.git`
++ `cd schanz-rolladen-raspi/ && pip3 install -r requirements.txt`
 
 
 # Testing the installation
