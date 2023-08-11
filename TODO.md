@@ -1,0 +1,1 @@
+- Hostnames as variables for docker

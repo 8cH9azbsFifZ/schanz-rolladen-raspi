@@ -9,7 +9,7 @@ class Rollershutter():
     mqtt_port = 1883
     fhem_port = 8083
 
-    def __init__(self, TimeOpen = 53. , TimeClose = 53., MQTThostname = "t20", FHEMhostname = "raspimatic-raspi-wlan", RollershutterName="Test1"):
+    def __init__(self, TimeOpen = 53. , TimeClose = 53., MQTThostname = "t20", FHEMhostname = "minicul-raspi", RollershutterName="Test1"):
         # Connect to FHEM
         self._fhem = fhem.Fhem(FHEMhostname, protocol="http", port=self.fhem_port)
         self._setup_signuino_fhem()
