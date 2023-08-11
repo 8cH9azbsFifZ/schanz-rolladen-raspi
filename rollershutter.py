@@ -1,7 +1,6 @@
 import time
 import paho.mqtt.client as mqtt
 import logging
-import sys, getopt
 import fhem
 
 logging.basicConfig(level=logging.DEBUG, format='Rollershutter(%(threadName)-10s) %(message)s')
