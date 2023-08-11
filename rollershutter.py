@@ -153,16 +153,5 @@ if __name__ == "__main__":
     TimeOpen = 53
     TimeClose = 53
 
-    opts, args = getopt.getopt(sys.argv[1:],"hs", ["simulation"])
-    for opt, arg in opts:
-        if opt == '-h':
-            print ('rollershutter.py -s')
-            sys.exit()
-        elif opt in ("-s", "--simulation"):
-            simulation = True
-            TimeOpen=5
-            TimeClose=5
-
-    #r = Rollershutter()
     r = Rollershutter(TimeOpen=TimeOpen, TimeClose=TimeClose)
     r._core_loop()
