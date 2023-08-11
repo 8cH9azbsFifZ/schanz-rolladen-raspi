@@ -9,8 +9,8 @@ services:
     privileged: true
     ports:
       - "8083:8083"
-    volumes:
-      - "./fhem/:/opt/fhem/"
+    #volumes:
+    #  - "./fhem/:/opt/fhem/"
     devices:
       - "/dev/ttyUSB0:/dev/ttyUSB0" # FIXME
     environment:
