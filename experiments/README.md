@@ -194,3 +194,4 @@ https://github.com/RFD-FHEM/SIGNALDuino/issues/293
 - RTL SDR IQ Format: *.cu8 - Complex 8-bit unsigned integer samples (RTL-SDR) https://k3xec.com/packrat-processing-iq/
 - Formats https://github.com/glv2/convert-samples
 - RTL 433 Tool https://github.com/merbanan/rtl_433
+- Using a realais: https://blog.berrybase.de/blog/2020/08/12/relais-steuerung-mit-dem-raspberry-pi-so-funktionierts/
