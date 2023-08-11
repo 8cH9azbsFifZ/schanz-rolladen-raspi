@@ -1,9 +1,11 @@
 # schanz-rolladen-raspi
 Remote Control 433MHz Schanz Rolladen with Raspi
 
-** Status: WIP **
+Using a minicul and the SIGNALduino FHEM module create an interface for a rollershutter using MQTT. 
+The MQTT topics are compatible with HomeAssistant.
 
-# Uses fhem and minicul
+![minicul](experiments/doc/minicul.png)
+
 
 # Testing the installation
 + Install mosquitto, i.e. on osx: `brew install mosquitto`
