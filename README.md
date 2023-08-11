@@ -111,9 +111,46 @@ picocom /dev/ttyUSB0 -b 57600
 - Closing :
 
 fhem_1  | 2023.08.11 14:38:10.427 1: sigduino: SD_UT_Parse UNDEFINED sensor unknown detected, protocol 46, data EAE20, code 1FFF1F0
+000101010001110111
+fhem_1  | 2023.08.11 15:40:00.439 1: sigduino: SD_UT_Parse UNDEFINED sensor unknown detected, protocol 46, data EAE20, code 1FFF1F0 and GEROLF 1FFF1F0F0
+=> TRISTATE CODE
+F0 =>  1000
+
+
+fhem_1  | 2023.08.11 16:09:48.838 4: sigduino: SD_UT protocol 46, bitData 11101010111000101000, hlen 5
+
+
 
 - Opening
 fhem_1  | 2023.08.11 14:38:17.444 1: sigduino: SD_UT_Parse UNDEFINED sensor unknown detected, protocol 46, data EAE28, code 1FFF1F0
+000101010001110101
+
+fhem_1  | 2023.08.11 15:39:35.749 1: sigduino: SD_UT_Parse UNDEFINED sensor unknown detected, protocol 46, data EAE28, code 1FFF1F0 and GEROLF 1FFF1F0FF
+
+FF => 1010 
+
+
+Tedsen_SKX2xx
+
+entspricht genau dem!
+
+
+
+      $deviceCode = SD_UT_bin2tristate(substr($bitData,0,14));    # only 14 bit from bitdata to tristate
+      $devicedef = 'Tedsen_SKX1xx ' . $deviceCode if (!$def);
+      $def = $modules{SD_UT}{defptr}{$devicedef} if (!$def);
+      $devicedef = 'Tedsen_SKX2xx ' . $deviceCode if (!$def);
+
+
+
+            $def = $modules{SD_UT}{defptr}{$devicedef} if (!$def);
+
+  my %tristatetobin=(
+     '0' => '00',
+     'F' => '10',
+     '1' => '11'
+  );
+
 
 
 
@@ -147,6 +184,18 @@ set sigduino raw SR;;R=3;;P0=4742;;P1=-1554;;P2=286;;P3=-786;;P4=649;;P5=-420;;D
 
 
 set sigduino sendMsg P3#00111010#R4
+
+
+
+
+MU;P0=9296;P1=-9184;P2=2067;P3=-232;P4=345;P5=-1968;P6=-15645;D=01232323452345234523232345454523452346232323452345234523232345454523452346232323452345234523232345454523452346232323452345234523232345454523452346232323452345234523232345454523452346232323452345234523232345454523452346232323452345234523232345454523452346;CP=4;R=31;O;
+
+set sigduino raw SR;;P0=9296;;P1=-9184;;P2=2067;;P3=-232;;P4=345;;P5=-1968;;P6=-15645;;D=01232323452345234523232345454523452346232323452345234523232345454523452346232323452345234523232345454523452346232323452345234523232345454523452346232323452345234523232345454523452346232323452345234523232345454523452346232323452345234523232345454523452346;;CP=4;;R=10;;O;;
+
+
+set sigduino sendMsg P46#111010101110001010#R3
+
+set sigduino sendMsg P46#111010101110001000#R3
 
 
 

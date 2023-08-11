@@ -680,9 +680,9 @@ my %models = (
                         Protocol   => 'P46',
                         Typ        => 'remote'
                       },
-  'Tedsen_SKX2xx' =>  { '1000'     => 'Button_1',  # tristate F0 = GEIGER Ab:  0-
-                        '1010'     => 'Button_2',  # tristate FF = GEIGER Auf: 00
-                        hex_length => [5],
+  'Tedsen_SKX2xx' =>  { '111010101110001000'     => 'Button_1',#'1000'     => 'Button_1',  # tristate F0 = GEIGER Ab:  0-
+                        '111010101110001010'     => 'Button_2',#'1010'     => 'Button_2',  # tristate FF = GEIGER Auf: 00
+                        hex_length => [15],
                         Protocol   => 'P46',
                         Typ        => 'remote'
                       },
@@ -1603,6 +1603,7 @@ sub SD_UT_Parse {
       $devicedef = 'Tedsen_SKX1xx ' . $deviceCode if (!$def);
       $def = $modules{SD_UT}{defptr}{$devicedef} if (!$def);
       $devicedef = 'Tedsen_SKX2xx ' . $deviceCode if (!$def);
+      Log3 $iohash, 1, "$ioname: GEROLF: $devicedef "; # fhem_1  | 2023.08.11 15:53:42.820 1: sigduino: GEROLF: Tedsen_SKX2xx 1FFF1F0 
       $def = $modules{SD_UT}{defptr}{$devicedef} if (!$def);
       $devicedef = 'Tedsen_SKX4xx ' . $deviceCode if (!$def);
       $def = $modules{SD_UT}{defptr}{$devicedef} if (!$def);
@@ -1912,7 +1913,11 @@ sub SD_UT_Parse {
   Log3 $iohash, 4, "$ioname: SD_UT device $devicedef found (delete cache = $deletecache)" if($def && $deletecache && $deletecache ne '-');
 
   if(!$def) {
-    Log3 $iohash, 1, "$ioname: SD_UT_Parse UNDEFINED sensor $model detected, protocol $protocol, data $rawData, code $deviceCode";
+    $state = substr($bitData,14,4);
+    $tristateCode = SD_UT_bin2tristate(substr($bitData,0,-2));    # only 18 bit from bitdata
+
+    Log3 $iohash, 1, "$ioname: SD_UT_Parse UNDEFINED sensor $model detected, protocol $protocol, data $rawData, code $deviceCode, and tristateCode  $tristateCode";
+
     return "UNDEFINED $name SD_UT $model" if ($model eq 'unknown');                                   # model set user manual
     return "UNDEFINED $name SD_UT $model $deviceCode" if ($model ne 'unknown_please_select_model');   # model set automatically
   }
@@ -2001,7 +2006,8 @@ sub SD_UT_Parse {
     }
     Log3 $name, 5, "$ioname: SD_UT_Parse devicedef=$devicedef attr_model=$model protocol=$protocol deviceCode=$deviceCode state=$state Zone=$zone";
   ############ Tedsen_SKX1xx, Tedsen_SKX2xx, Tedsen_SKX4xx, Tedsen_SKX6xx ############ Protocol 46 ############
-  } elsif (($model eq 'Tedsen_SKX1xx' || $model eq 'Tedsen_SKX2xx' || $model eq 'Tedsen_SKX4xx' || $model eq 'Tedsen_SKX6xx') && $protocol == 46) {
+  #} elsif (($model eq 'Tedsen_SKX1xx' || $model eq 'Tedsen_SKX2xx' || $model eq 'Tedsen_SKX4xx' || $model eq 'Tedsen_SKX6xx') && $protocol == 46) {
+  } elsif ($protocol == 46) {
     $state = substr($bitData,14,4);
     $tristateCode = SD_UT_bin2tristate(substr($bitData,0,-2));    # only 18 bit from bitdata
     Log3 $iohash, 4, "$ioname: SD_UT_Parse $model - converted to tristate $tristateCode";
