@@ -2,20 +2,21 @@ import time
 import paho.mqtt.client as mqtt
 import logging
 import sys, getopt
+import fhem
 
 logging.basicConfig(level=logging.DEBUG, format='Rollershutter(%(threadName)-10s) %(message)s')
 
 class Rollershutter():
+    mqtt_port = 1883
+    fhem_port = 8083
 
-    data_path = "/home/pi/schanz-rolladen-raspi/data"
-
-    def __init__(self, TimeOpen = 53. , TimeClose = 53., MQTThostname = "t20", RollershutterName="Test1", simulation=True):
-        self._simulation = simulation
+    def __init__(self, TimeOpen = 53. , TimeClose = 53., MQTThostname = "t20", FHEMhostname = "raspimatic-raspi-wlan", RollershutterName="Test1"):
+        # Connect to FHEM
+        self._fhem = fhem.Fhem(FHEMhostname, protocol="http", port=self.fhem_port)
 
         # Connect to MQTT broker
-        port = 1883
         self._client = mqtt.Client()
-        self._client.connect(MQTThostname, port, 60)
+        self._client.connect(MQTThostname, self.mqtt_port, 60)
         self._client.on_connect = self._on_connect
         self._client.on_message = self._on_message
         self._samplingrate = 0.01 # delay for the core loop 
@@ -139,11 +140,12 @@ class Rollershutter():
                 self._sendmessage(topic="/percentage", message=str(self._percentage))
 
     def _press_button_open(self):
-        return # TODO
-
+        open_command = "set sigduino sendMsg P46#111010101110001010#R10"
+        self._fhem.send_cmd(open_command) 
+        
     def _press_button_close(self):
-        return # TODO
-
+        close_command = "set sigduino sendMsg P46#111010101110001000#R10"
+        self._fhem.send_cmd(close_command) 
 
 if __name__ == "__main__":
     print ("Run manual")
@@ -162,5 +164,5 @@ if __name__ == "__main__":
             TimeClose=5
 
     #r = Rollershutter()
-    r = Rollershutter(TimeOpen=TimeOpen, TimeClose=TimeClose, simulation=simulation)
+    r = Rollershutter(TimeOpen=TimeOpen, TimeClose=TimeClose)
     r._core_loop()
