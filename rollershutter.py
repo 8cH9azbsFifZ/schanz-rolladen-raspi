@@ -1,33 +1,16 @@
 import time
 import paho.mqtt.client as mqtt
 import logging
-import subprocess
 import sys, getopt
-import RPi.GPIO as GPIO
-
 
 logging.basicConfig(level=logging.DEBUG, format='Rollershutter(%(threadName)-10s) %(message)s')
 
 class Rollershutter():
-    frequency = "433.9500e6"
-    samplerate = "250000"
+
     data_path = "/home/pi/schanz-rolladen-raspi/data"
-    #-t u8           IQ type (i16 default) {i16,u8,float,double}\n\
 
-
-    def __init__(self, TimeOpen = 53. , TimeClose = 53., MQTThostname = "t20", RollershutterName="Test1", simulation=True, PIN_BCM_Up = 23, PIN_BCM_Down = 24):
+    def __init__(self, TimeOpen = 53. , TimeClose = 53., MQTThostname = "t20", RollershutterName="Test1", simulation=True):
         self._simulation = simulation
-
-        # Configure PINS
-        self._relais_sw_up_pin = PIN_BCM_Up 
-        self._relais_sw_down_pin = PIN_BCM_Down 
-        self._sw_press_duration = .5 # 1 second press the buttons before release
-        GPIO.setmode(GPIO.BCM)
-        time.sleep(1)
-        GPIO.setup(self._relais_sw_up_pin, GPIO.OUT) 
-        time.sleep(1)
-        GPIO.setup(self._relais_sw_down_pin, GPIO.OUT) 
-        time.sleep(1)
 
         # Connect to MQTT broker
         port = 1883
@@ -156,39 +139,10 @@ class Rollershutter():
                 self._sendmessage(topic="/percentage", message=str(self._percentage))
 
     def _press_button_open(self):
-        self._press_button_open_relais()
+        return # TODO
 
     def _press_button_close(self):
-        self._press_button_close_relais()
-
-    def _press_button_open_sdr(self):
-        logging.debug("Send button open signal")
-        if not self._simulation:
-            subprocess.run(['/usr/bin/sendiq', "-s", "250000" ,"-f", self.frequency, "-t", "u8", "-i", self.data_path+"/button_open.iq"])
-    
-    def _press_button_close_sdr(self):
-        logging.debug("Send button close signal")
-        if not self._simulation:
-            subprocess.run(['/usr/bin/sendiq', "-s", "250000" ,"-f", self.frequency, "-t", "u8", "-i", self.data_path+"/button_close.iq"])
-
-
-    def _relais_on(self, pin):
-        GPIO.output(pin, GPIO.LOW)    
-        
-    def _relais_off(self, pin):
-        GPIO.output(pin, GPIO.HIGH)
-
-    def _press_button_close_relais(self):
-        logging.debug("Send button close signal")
-        self._relais_on(self._relais_sw_down_pin)
-        time.sleep(self._sw_press_duration)
-        self._relais_off(self._relais_sw_down_pin)
-
-    def _press_button_open_relais(self):
-        logging.debug("Send button open signal")
-        self._relais_on(self._relais_sw_up_pin)
-        time.sleep(self._sw_press_duration)
-        self._relais_off(self._relais_sw_up_pin)
+        return # TODO
 
 
 if __name__ == "__main__":
