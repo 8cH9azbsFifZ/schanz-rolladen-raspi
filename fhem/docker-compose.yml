@@ -6,7 +6,6 @@ services:
     privileged: true
     ports:
       - "8083:8083"
-    #  - "7072:7072"
     volumes:
       - "./fhem/:/opt/fhem/"
     devices:
