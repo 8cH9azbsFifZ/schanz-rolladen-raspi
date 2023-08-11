@@ -30,11 +30,16 @@ class Rollershutter():
         self._velocity_open = 1./TimeOpen
         self._time_close = TimeClose
         self._velocity_close = 1./TimeClose
+        self._update_state("stopped")
 
         # Timers
         self._time_lastcommand = time.time()
         self._time_t0 = time.time()
         self._time_t1 = time.time()
+
+    def _update_state(self, state):
+        self._state = state
+        self._sendmessage(topic="/state", message=str(self._state))
 
     def _on_connect(self, client, userdata, flags, rc):
         """ Connect to MQTT broker and subscribe to control messages """
@@ -100,17 +105,20 @@ class Rollershutter():
     def Close(self, target_percent = 1.0):
         logging.debug("Rollershutter: close")
         self._moving_close = True
+        self._update_state("closing")
         self._target_percentage = target_percent
         self._press_button_close()
 
     def Open(self, target_percent = 0.0):
         logging.debug("Rollershutter: open")
         self._moving_open = True
+        self._update_state("opening")
         self._target_percentage = target_percent
         self._press_button_open()
 
     def Stop(self):
         logging.debug("Rollershutter: stop")
+        self._update_state("stopped")
         if self._moving_open:
             logging.debug("Rollershutter: stop - by pressing close button")
             self._press_button_close()

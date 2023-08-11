@@ -1,0 +1,16 @@
+mqtt:
+  - cover:
+      name: "MQTT Cover"
+      command_topic: "rollershutter/control/Test1"
+      state_topic: "rollershutter/state/Test1"
+      payload_open: "Open"
+      payload_close: "Close"
+      payload_stop: "Stop"
+      state_open: "open"
+      state_opening: "opening"
+      state_closed: "closed"
+      state_closing: "closing"
+      payload_available: "online"
+      payload_not_available: "offline"
+      optimistic: false
+      value_template: "{{ value.x }}"

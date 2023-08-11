@@ -7,14 +7,17 @@ Remote Control 433MHz Schanz Rolladen with Raspi
 
 # Testing the installation
 + Install mosquitto, i.e. on osx: `brew install mosquitto`
++ Set position topic: Open, Close, Stop, 0-100 
 ```
-mosquitto_pub -h t20 -t rollershutter/control/Test1 -m <Open|Close|Stop|0-100>
 mosquitto_pub -h t20 -t rollershutter/control/Test1 -m Open
 mosquitto_pub -h t20 -t rollershutter/control/Test1 -m Close
 mosquitto_pub -h t20 -t rollershutter/control/Test1 -m Stop
 mosquitto_pub -h t20 -t rollershutter/control/Test1 -m 30
-mosquitto_sub -h t20 -t rollershutter/Test1/percentage
+
 ```
++ State topic: open, closed, opening, closing, stopped - `mosquitto_sub -h t20 -t rollershutter/Test1/state`
++ Position topic: 0-100 - `mosquitto_sub -h t20 -t rollershutter/Test1/percentage`
+
 
 # References
 - The motor is a Siral EL4F motor with 433 MHz remote control: https://www.siral.de/index.php?id=127
