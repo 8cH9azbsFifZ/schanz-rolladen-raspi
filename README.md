@@ -19,3 +19,5 @@ mosquitto_sub -h t20 -t rollershutter/Test1/percentage
 # References
 - The motor is a Siral EL4F motor with 433 MHz remote control: https://www.siral.de/index.php?id=127
 - MQTT interface: https://www.home-assistant.io/integrations/cover.mqtt/
+- Using SIGNALduino https://wiki.fhem.de/wiki/SIGNALduino
+- And FHEM https://wiki.fhem.de/wiki/Hauptseite
