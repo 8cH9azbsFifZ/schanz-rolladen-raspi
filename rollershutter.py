@@ -12,6 +12,7 @@ class Rollershutter():
     def __init__(self, TimeOpen = 53. , TimeClose = 53., MQTThostname = "t20", FHEMhostname = "raspimatic-raspi-wlan", RollershutterName="Test1"):
         # Connect to FHEM
         self._fhem = fhem.Fhem(FHEMhostname, protocol="http", port=self.fhem_port)
+        self._setup_signuino_fhem()
 
         # Connect to MQTT broker
         self._client = mqtt.Client()
@@ -36,6 +37,11 @@ class Rollershutter():
         self._time_lastcommand = time.time()
         self._time_t0 = time.time()
         self._time_t1 = time.time()
+
+    def _setup_signuino_fhem(self):
+        self._fhem.send_cmd("define sigduino SIGNALduino /dev/ttyUSB0@57600") 
+        self._fhem.send_cmd("attr sigduino hardware miniculCC1101") 
+        #"attr sigduino verbose 4"
 
     def _update_state(self, state):
         self._state = state
