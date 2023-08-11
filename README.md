@@ -3,6 +3,8 @@ Remote Control 433MHz Schanz Rolladen with Raspi
 
 ** Status: WIP **
 
+# Uses fhem and minicul
+
 # Testing the installation
 + Install mosquitto, i.e. on osx: `brew install mosquitto`
 ```

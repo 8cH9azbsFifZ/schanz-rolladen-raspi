@@ -1,5 +1,8 @@
 version: '2.3'
 services:
+  schanz-rolladen-mqtt:
+    image: ghcr.io/8ch9azbsfifz/schanz-rolladen-raspi:latest
+    restart: always
   fhem:
     image: ghcr.io/fhem/fhem-docker:3-bullseye
     restart: always
