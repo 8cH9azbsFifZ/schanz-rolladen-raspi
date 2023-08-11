@@ -49,6 +49,7 @@ class Rollershutter():
         """ Connect to MQTT broker and subscribe to control messages """
         logging.debug("Connected with result code " + str(rc))
         self._client.subscribe("rollershutter/control/" + self.Name)
+        self._client.subscribe("rollershutter/control_position/" + self.Name)
 
     def _sendmessage(self, topic="/none", message="None"):
         """ Send a message using MQTT """
