@@ -22,7 +22,6 @@ class Rollershutter():
 
         # Current state
         self.Name = RollershutterName
-        self._percentage = 0
         self._target_percentage = 0
         self._moving_open = False # Current movement upwards?
         self._moving_close = False 
@@ -31,6 +30,7 @@ class Rollershutter():
         self._time_close = TimeClose
         self._velocity_close = 1./TimeClose
         self._update_state("stopped")
+        self._update_percentage(0)
 
         # Timers
         self._time_lastcommand = time.time()
@@ -40,6 +40,10 @@ class Rollershutter():
     def _update_state(self, state):
         self._state = state
         self._sendmessage(topic="/state", message=str(self._state))
+
+    def _update_percentage(self, percentage):
+        self._percentage = percentage
+        self._sendmessage(topic="/percentage", message=str(self._percentage))
 
     def _on_connect(self, client, userdata, flags, rc):
         """ Connect to MQTT broker and subscribe to control messages """
