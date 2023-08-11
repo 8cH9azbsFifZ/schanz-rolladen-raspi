@@ -1,37 +1,16 @@
 version: '2.3'
-
-  #networks:
-  #net:
-  #  driver: bridge
-  #  # enable_ipv6: true
-  #  ipam:
-  #    driver: default
-  #    config:
-  #      - subnet: 172.27.0.0/24
-  #        gateway: 172.27.0.1
-  #      # - subnet: fd00:0:0:0:27::/80
-        #   gateway: fd00:0:0:0:27::1
-
-services:  
-  test:
-    image: debian
-# Example to connect USB to the container w/o
-  # privileged mode (preferred method)
+services:
   fhem:
     image: ghcr.io/fhem/fhem-docker:3-bullseye
     restart: always
     privileged: true
-      #network_mode: host
-
-      #networks:
-      #- net
     ports:
       - "8083:8083"
-      - "7072:7072"
+    #  - "7072:7072"
     volumes:
       - "./fhem/:/opt/fhem/"
     devices:
-      - "/dev/ttyUSB0:/dev/ttyUSB0"
+      - "/dev/ttyUSB0:/dev/ttyUSB0" # FIXME
     environment:
       FHEM_UID: 6061
       FHEM_GID: 6061
