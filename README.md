@@ -131,6 +131,17 @@ set sigduino raw SR;;R=3;;P0=4742;;P1=-1554;;P2=286;;P3=-786;;P4=649;;P5=-420;;D
 
 
 
+https://hub.docker.com/r/fhem/fhem
+
+https://github.com/fhem/fhem-docker/blob/dev/docker-compose.yml
+https://www.fhemwiki.de/wiki/SIGNALduino
+https://www.fhemwiki.de/wiki/Unbekannte_Funkprotokolle#Ansatz_1_-_Versuchen
+https://github.com/RFD-FHEM/SIGNALDuino/issues/293
+/dev/ttyUSB0@57600
+
+/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0
+
+
 # References
 - https://hagensieker.com/2019/01/12/rpitx-replay-attack-on-ge-myselectsmart-remote-control-outlet/
 - RTL SDR IQ Format: *.cu8 - Complex 8-bit unsigned integer samples (RTL-SDR) https://k3xec.com/packrat-processing-iq/
