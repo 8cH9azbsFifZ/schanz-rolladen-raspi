@@ -14,7 +14,6 @@ class Rollershutter():
         else:
             logging.debug("Simulation Mode: Off")
 
-
         # Connect to FHEM
         logging.debug("Starting FHEM connection to: " + FHEMhostname + " on port " + str(fhem_port))
         self._fhem = fhem.Fhem(FHEMhostname, protocol="http", port=fhem_port)
@@ -39,7 +38,7 @@ class Rollershutter():
         self._time_close = TimeClose
         self._velocity_close = 1./TimeClose
         self._update_state("stopped")
-        self._update_percentage(0.0)
+        self._update_percentage(0, initial_state = True)
 
         # Timers
         self._time_lastcommand = time.time()
@@ -56,7 +55,14 @@ class Rollershutter():
         self._state = state
         self._sendmessage(topic="/state", message=str(self._state))
 
-    def _update_percentage(self, percentage):
+    def _update_percentage(self, percentage, initial_state = False):
+        if initial_state:
+            self._percentage = 0
+            self._percentage_t1 = 0
+
+        # TODO: display only significant state updates
+            
+        self._percentage_t1 = self._percentage
         self._percentage = percentage
         percentage_0_100 = int(self._percentage*100.)
         self._sendmessage(topic="/percentage", message=str(percentage_0_100))
