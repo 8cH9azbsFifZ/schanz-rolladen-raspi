@@ -1,0 +1,1 @@
+Rollershutter TestRolladen { channel="mqtt:topic:1:TestRoom:blind" }

@@ -25,19 +25,3 @@ You can connect this channel to a Rollershutter or Dimmer item.
 
 
 
-# Things config
-Bridge mqtt:broker:1 [ host="t20", secure=false ]{
-   Thing topic TestRoom {
-   Channels:
-      Type dimmer : blind "Blind" [ stateTopic="rollershutter/Test1/percentage", commandTopic="rollershutter/control_position/Test1", min=0, max=100, step=1 ]
-   }    
-}
-
-# Item config
-
-
-Rollershutter TestRolladen { channel="mqtt:topic:1:TestRoom:blind" }
-
-
-# References
-- OH3 Manual https://www.openhab.org/addons/bindings/mqtt.generic/

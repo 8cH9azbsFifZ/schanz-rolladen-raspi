@@ -1,0 +1,6 @@
+Bridge mqtt:broker:1 [ host="t20", secure=false ]{
+   Thing topic TestRoom {
+   Channels:
+      Type dimmer : blind "Blind" [ stateTopic="rollershutter/Test1/percentage", commandTopic="rollershutter/control_position/Test1", min=0, max=100, step=1 ]
+   }    
+}
