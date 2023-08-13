@@ -1,5 +1,5 @@
 # schanz-rolladen-raspi
-Remote Control 433MHz Schanz Rolladen with Raspi
+Remote Control 433MHz Schanz Rolladen with Raspi-
 
 Using a minicul and the SIGNALduino FHEM module create an interface for a rollershutter using MQTT. 
 FHEM is encapsulated in a separate container only for the purpose of sending the 433,95 MHz commands
