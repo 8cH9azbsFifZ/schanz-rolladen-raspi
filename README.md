@@ -14,7 +14,7 @@ Thus this module is compatible with HomeAssistang and OpenHab.
 
 ## Configuring the varibles for the containers
 Configure the following variables in the [docker-compose.yml](doc/docker-compose.yml) file: 
-`MQTT_HOST MQTT_PORT FHEM_HOST FHEM_PORT TIME_OPEN TIME_CLOSE ROLLERSHUTTER_NAME``
+`MQTT_HOST MQTT_PORT FHEM_HOST FHEM_PORT TIME_OPEN TIME_CLOSE ROLLERSHUTTER_NAME`
 If variable `SIMULATION` is defined, run in simulation mode.
 
 ### Testing the installation
