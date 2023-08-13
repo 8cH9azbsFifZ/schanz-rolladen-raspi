@@ -6,6 +6,15 @@ FHEM is encapsulated in a separate container only for the purpose of sending the
 to the rollershutter motor. A separate container provides a python script for sending the commands to fhem
 and serving an interface using MQTT.
 
+The following topics will be used:
+
+| Description   | Topic                                | Values         |
+| ------------- | ------------------------------------ | -------------- |
+| Set position  | rollershutter/control_position/Test1 | 0-100          |
+| Control       | rollershutter/control/Test1          | Open, Close, Stop |
+| State         | rollershutter/Test1/state            | open, closed, opening, closing, stopped |
+| Position      | rollershutter/Test1/percentage       | 0-100 |
+
 Thus this module is compatible with HomeAssistang and OpenHab.
 
 ![minicul](doc/img/minicul.png)
@@ -18,8 +27,9 @@ Configure the following variables in the [docker-compose.yml](doc/docker-compose
 If variable `SIMULATION` is defined, run in simulation mode.
 
 ### Testing the installation
-+ Install mosquitto, i.e. on osx: `brew install mosquitto`
-+ Set position topic:  0-100 `mosquitto_pub -h t20 -t rollershutter/control_position/Test1 -m 30`
++ Install mosquitto, i.e. on osx: `brew install mosquitto` 
++ Optionally use the dashboard using docker-compose described [here](doc/mqtt/docker-compose.yml)
++ Set position topic: 0-100 `mosquitto_pub -h t20 -t rollershutter/control_position/Test1 -m 30`
 + Set control topic: Open, Close, Stop
 ```
 mosquitto_pub -h t20 -t rollershutter/control/Test1 -m Open
