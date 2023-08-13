@@ -35,8 +35,8 @@ mosquitto_pub -h t20 -t rollershutter/control/Test1 -m Stop
 
 ## Configuration for OpenHAB
 + Install the mqtt binding
-+ Copy and adjust the things configuration ![Things](openhab.things)
-+ Copy and adjust the item configuration ![Item](openhab.items)
++ Copy and adjust the things configuration [Things](openhab.things)
++ Copy and adjust the item configuration [Item](openhab.items)
 
 
 # References
