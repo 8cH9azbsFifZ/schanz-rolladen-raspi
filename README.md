@@ -15,7 +15,7 @@ The following topics will be used:
 | State         | rollershutter/Test1/state            | open, closed, opening, closing, stopped |
 | Position      | rollershutter/Test1/percentage       | 0-100 |
 
-Thus this module is compatible with HomeAssistang and OpenHab.
+Thus this module is compatible with HomeAssistant and OpenHab.
 
 ![minicul](doc/img/minicul.png)
 
@@ -39,7 +39,7 @@ mosquitto_pub -h t20 -t rollershutter/control/Test1 -m Stop
 + State topic: open, closed, opening, closing, stopped - `mosquitto_sub -h t20 -t rollershutter/Test1/state`
 + Position topic: 0-100 - `mosquitto_sub -h t20 -t rollershutter/Test1/percentage`
 
-## Configuration for HomeAssistang
+## Configuration for HomeAssistant
 + Install the MQTT integration and provide your server
 + Copy and adjust the configuration in [HA Config](doc/homeassistant-config.yaml) to your setup
 
