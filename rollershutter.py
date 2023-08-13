@@ -48,7 +48,7 @@ class Rollershutter():
 
     def _setup_signuino_fhem(self):
         if not self._simulation:
-            self._fhem.send_cmd("define sigduino SIGNALduino /dev/ttyUSB0@57600") 
+            self._fhem.send_cmd("define sigduino SIGNALduino /dev/ttyUSB0@57600") # FIXME
             self._fhem.send_cmd("attr sigduino hardware miniculCC1101") 
             #"attr sigduino verbose 4"
 
@@ -58,7 +58,8 @@ class Rollershutter():
 
     def _update_percentage(self, percentage):
         self._percentage = percentage
-        self._sendmessage(topic="/percentage", message=str(self._percentage))
+        percentage_0_100 = int(self._percentage*100.)
+        self._sendmessage(topic="/percentage", message=str(percentage_0_100))
 
     def _on_connect(self, client, userdata, flags, rc):
         """ Connect to MQTT broker and subscribe to control messages """
@@ -88,9 +89,9 @@ class Rollershutter():
             self.Close()
             return
         elif msg.payload.decode().isdigit():
-            percent = float(msg.payload.decode()) / 100.
+            percent = float(msg.payload.decode()) / 100. # internally we use range [0,1], but externally [0,100]
             if 0.0 <= percent <= 1.0:
-                self.Percent(percent)
+                self.SetPercent(percent)# internally we use range [0,1], but externally [0,100]
             else:
                 logging.debug("  parameter not in range: " + msg.payload.decode())
         else:
@@ -110,7 +111,7 @@ class Rollershutter():
                     self.Stop()
                 else: 
                     self._moving_close = False
-                self._sendmessage(topic="/percentage", message=str(self._percentage))
+                self._update_percentage (self._percentage)
         if self._moving_open:
             moved_percentage = dt * self._velocity_open
             self._percentage -= moved_percentage 
@@ -120,7 +121,7 @@ class Rollershutter():
                     self.Stop()
                 else:
                     self._moving_open = False
-                self._sendmessage(topic="/percentage", message=str(self._percentage))
+                self._update_percentage (self._percentage)
         
     def Close(self, target_percent = 1.0):
         logging.debug("Rollershutter: close")
@@ -150,8 +151,8 @@ class Rollershutter():
         else:
             logging.debug("Rollershutter: not moving")
 
-    def Percent(self, percentage):
-        logging.debug("Rollershutter: set to percent " + str(percentage))
+    def SetPercent(self, percentage):# internally we use range [0,1], but externally [0,100]
+        logging.debug("Rollershutter: set to percent " + str(percentage) + " internally [0,1]")
         diff_percent = self._percentage - percentage
         if diff_percent < 0:
             self.Close(target_percent=percentage)
@@ -164,7 +165,7 @@ class Rollershutter():
             self._client.loop(self._samplingrate) #blocks for 100ms (or whatever variable given, default 1s)
             self._calc_current_percentage()
             if self._moving_close or self._moving_open:
-                self._sendmessage(topic="/percentage", message=str(self._percentage))
+                self._update_percentage (self._percentage)
 
     def _press_button_open(self):
         open_command = "set sigduino sendMsg P46#111010101110001010#R10"
