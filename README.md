@@ -8,12 +8,12 @@ and serving an interface using MQTT.
 
 Thus this module is compatible with HomeAssistang and OpenHab.
 
-![minicul](experiments/doc/minicul.png)
+![minicul](doc/img/minicul.png)
 
 # Installation
 
 ## Configuring the varibles for the containers
-Configure the following variables in the `docker-compose.yml`` file: 
+Configure the following variables in the [docker-compose.yml](doc/docker-compose.yml) file: 
 `MQTT_HOST MQTT_PORT FHEM_HOST FHEM_PORT TIME_OPEN TIME_CLOSE ROLLERSHUTTER_NAME``
 If variable `SIMULATION` is defined, run in simulation mode.
 
@@ -31,12 +31,12 @@ mosquitto_pub -h t20 -t rollershutter/control/Test1 -m Stop
 
 ## Configuration for HomeAssistang
 + Install the MQTT integration and provide your server
-+ Copy and adjust the configuration in `homeassistant-config.yaml` to your setup
++ Copy and adjust the configuration in [HA Config](doc/homeassistant-config.yaml) to your setup
 
 ## Configuration for OpenHAB
 + Install the mqtt binding
-+ Copy and adjust the things configuration [Things](openhab.things)
-+ Copy and adjust the item configuration [Item](openhab.items)
++ Copy and adjust the things configuration [Things](doc/openhab.things)
++ Copy and adjust the item configuration [Item](doc/openhab.items)
 
 
 # References

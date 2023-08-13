@@ -1,10 +1,10 @@
 FROM python:3.11
 
 WORKDIR /opt/app
-COPY requirements.txt .
+COPY src/requirements.txt .
 RUN pip3 install -r requirements.txt
 
-ADD rollershutter.py .
+ADD src/rollershutter.py .
 
 ENV MQTT_HOST t20
 ENV MQTT_PORT 1883
