@@ -11,7 +11,6 @@ services:
       TIME_OPEN: 53
       TIME_CLOSE: 53
       ROLLERSHUTTER_NAME: Test1
-      SIMULATION: False
   fhem:
     image: ghcr.io/fhem/fhem-docker:3-bullseye
     restart: always
