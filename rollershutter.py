@@ -2,26 +2,34 @@ import time
 import paho.mqtt.client as mqtt
 import logging
 import fhem
+import os
 
 logging.basicConfig(level=logging.DEBUG, format='Rollershutter(%(threadName)-10s) %(message)s')
 
 class Rollershutter():
-    mqtt_port = 1883
-    fhem_port = 8083
+    def __init__(self, TimeOpen = 53. , TimeClose = 53., MQTThostname = "t20", mqtt_port=1883, FHEMhostname = "minicul-raspi", fhem_port=8083, RollershutterName="Test1", Simulation = False):
+        self._simulation = Simulation
+        if self._simulation:
+            logging.debug("Simulation Mode: On")
+        else:
+            logging.debug("Simulation Mode: Off")
 
-    def __init__(self, TimeOpen = 53. , TimeClose = 53., MQTThostname = "t20", FHEMhostname = "minicul-raspi", RollershutterName="Test1"):
+
         # Connect to FHEM
-        self._fhem = fhem.Fhem(FHEMhostname, protocol="http", port=self.fhem_port)
+        logging.debug("Starting FHEM connection to: " + FHEMhostname + " on port " + str(fhem_port))
+        self._fhem = fhem.Fhem(FHEMhostname, protocol="http", port=fhem_port)
         self._setup_signuino_fhem()
 
         # Connect to MQTT broker
+        logging.debug("Starting MQTT connection to: " + MQTThostname + " on port " + str(mqtt_port))
         self._client = mqtt.Client()
-        self._client.connect(MQTThostname, self.mqtt_port, 60)
+        self._client.connect(MQTThostname, mqtt_port, 60)
         self._client.on_connect = self._on_connect
         self._client.on_message = self._on_message
         self._samplingrate = 0.01 # delay for the core loop 
 
         # Current state
+        logging.debug("Starting rollershutter logic for: " + RollershutterName + " with time open " + str(TimeOpen) + " and time close " + str(TimeClose))
         self.Name = RollershutterName
         self._target_percentage = 0
         self._moving_open = False # Current movement upwards?
@@ -39,9 +47,10 @@ class Rollershutter():
         self._time_t1 = time.time()
 
     def _setup_signuino_fhem(self):
-        self._fhem.send_cmd("define sigduino SIGNALduino /dev/ttyUSB0@57600") 
-        self._fhem.send_cmd("attr sigduino hardware miniculCC1101") 
-        #"attr sigduino verbose 4"
+        if not self._simulation:
+            self._fhem.send_cmd("define sigduino SIGNALduino /dev/ttyUSB0@57600") 
+            self._fhem.send_cmd("attr sigduino hardware miniculCC1101") 
+            #"attr sigduino verbose 4"
 
     def _update_state(self, state):
         self._state = state
@@ -159,17 +168,24 @@ class Rollershutter():
 
     def _press_button_open(self):
         open_command = "set sigduino sendMsg P46#111010101110001010#R10"
-        self._fhem.send_cmd(open_command) 
+        if not self._simulation:
+            self._fhem.send_cmd(open_command) 
         
     def _press_button_close(self):
         close_command = "set sigduino sendMsg P46#111010101110001000#R10"
-        self._fhem.send_cmd(close_command) 
+        if not self._simulation:
+            self._fhem.send_cmd(close_command) 
 
 if __name__ == "__main__":
-    print ("Run manual")
-    simulation = False
-    TimeOpen = 53
-    TimeClose = 53
+    vMQTT_HOST = os.getenv("MQTT_HOST", "t20")
+    vMQTT_PORT = os.getenv("MQTT_PORT", 1883)
+    vFHEM_HOST = os.getenv("FHEM_HOST", "minicul-raspi")
+    vFHEM_PORT = os.getenv("FHEM_PORT", 8083)
+    vTIME_OPEN = os.getenv("TIME_OPEN", 53)
+    vTIME_CLOSE = os.getenv("TIME_CLOSE", 53)
+    vROLLERSHUTTER_NAME = os.getenv("ROLLERSHUTTER_NAME", "Test1")
+    vSIMULATION = os.getenv("SIMULATION")
 
-    r = Rollershutter(TimeOpen=TimeOpen, TimeClose=TimeClose)
+    r = Rollershutter(TimeOpen=vTIME_OPEN, TimeClose=vTIME_CLOSE, RollershutterName=vROLLERSHUTTER_NAME, MQTThostname=vMQTT_HOST, mqtt_port=vMQTT_PORT, FHEMhostname=vFHEM_HOST, fhem_port=vFHEM_PORT, Simulation=vSIMULATION)
+
     r._core_loop()

@@ -3,6 +3,15 @@ services:
   schanz-rolladen-mqtt:
     image: ghcr.io/8ch9azbsfifz/schanz-rolladen-raspi:latest
     restart: always
+    environment:
+      MQTT_HOST: t20
+      MQTT_PORT: 1883
+      FHEM_HOST: minicul-raspi
+      FHEM_PORT: 8083
+      TIME_OPEN: 53
+      TIME_CLOSE: 53
+      ROLLERSHUTTER_NAME: Test1
+      SIMULATION: False
   fhem:
     image: ghcr.io/fhem/fhem-docker:3-bullseye
     restart: always

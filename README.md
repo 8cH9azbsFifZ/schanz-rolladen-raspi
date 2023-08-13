@@ -6,6 +6,18 @@ The MQTT topics are compatible with HomeAssistant.
 
 ![minicul](experiments/doc/minicul.png)
 
+# Configuring the varibles
+Configure the following variable in the docker-compose.yml file:
+
+ MQTT_HOST
+ MQTT_PORT
+ FHEM_HOST
+ FHEM_PORT
+ TIME_OPEN
+ TIME_CLOSE
+ ROLLERSHUTTER_NAME
+
+If variable `SIMULATION` is defined, run in simulation mode.
 
 # Testing the installation
 + Install mosquitto, i.e. on osx: `brew install mosquitto`
