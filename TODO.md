@@ -1,1 +1,4 @@
 - Hostnames as variables for docker
+- Simulation mode
+- Fix percentages
+- OH integration
