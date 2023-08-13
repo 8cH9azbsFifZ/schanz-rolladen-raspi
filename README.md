@@ -45,3 +45,4 @@ mosquitto_pub -h t20 -t rollershutter/control/Test1 -m Stop
 - Using SIGNALduino https://wiki.fhem.de/wiki/SIGNALduino
 - And FHEM https://wiki.fhem.de/wiki/Hauptseite
 - OpenHAB MQTT integration https://www.openhab.org/addons/bindings/mqtt.generic/
+- Experiments and scrapbook for reverse engineering this protocol [Scrapbook](doc/experiments/README.md)
