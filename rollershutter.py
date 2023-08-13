@@ -39,7 +39,7 @@ class Rollershutter():
         self._time_close = TimeClose
         self._velocity_close = 1./TimeClose
         self._update_state("stopped")
-        self._update_percentage(0)
+        self._update_percentage(0.0)
 
         # Timers
         self._time_lastcommand = time.time()
