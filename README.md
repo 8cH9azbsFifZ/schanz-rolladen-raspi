@@ -37,3 +37,4 @@ mosquitto_pub -h t20 -t rollershutter/control/Test1 -m Stop
 - MQTT interface: https://www.home-assistant.io/integrations/cover.mqtt/
 - Using SIGNALduino https://wiki.fhem.de/wiki/SIGNALduino
 - And FHEM https://wiki.fhem.de/wiki/Hauptseite
+- OpenHAB MQTT integration https://www.openhab.org/addons/bindings/mqtt.generic/
