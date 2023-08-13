@@ -185,11 +185,11 @@ class Rollershutter():
 
 if __name__ == "__main__":
     vMQTT_HOST = os.getenv("MQTT_HOST", "t20")
-    vMQTT_PORT = os.getenv("MQTT_PORT", 1883)
+    vMQTT_PORT = int(os.getenv("MQTT_PORT", 1883))
     vFHEM_HOST = os.getenv("FHEM_HOST", "minicul-raspi")
-    vFHEM_PORT = os.getenv("FHEM_PORT", 8083)
-    vTIME_OPEN = os.getenv("TIME_OPEN", 53)
-    vTIME_CLOSE = os.getenv("TIME_CLOSE", 53)
+    vFHEM_PORT = int(os.getenv("FHEM_PORT", 8083))
+    vTIME_OPEN = int(os.getenv("TIME_OPEN", 53))
+    vTIME_CLOSE = int(os.getenv("TIME_CLOSE", 53))
     vROLLERSHUTTER_NAME = os.getenv("ROLLERSHUTTER_NAME", "Test1")
     vSIMULATION = os.getenv("SIMULATION")
 

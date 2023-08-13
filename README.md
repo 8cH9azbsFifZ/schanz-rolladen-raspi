@@ -31,6 +31,13 @@ mosquitto_pub -h t20 -t rollershutter/control/Test1 -m Stop
 + State topic: open, closed, opening, closing, stopped - `mosquitto_sub -h t20 -t rollershutter/Test1/state`
 + Position topic: 0-100 - `mosquitto_sub -h t20 -t rollershutter/Test1/percentage`
 
+## MQTT locally
++ start local mqtt broker in mqtt dir: `docker-compose up``
+```
+mosquitto_sub -h localhost -t rollershutter/Test1/percentage
+mosquitto_pub -h localhost -t rollershutter/control/Test1 -m Close
+```
+
 
 # References
 - The motor is a Siral EL4F motor with 433 MHz remote control: https://www.siral.de/index.php?id=127
