@@ -1,3 +1,0 @@
-- Simulation mode
-- Fix percentages
-- OH integration
