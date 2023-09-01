@@ -118,7 +118,7 @@ class Rollershutter():
             self._percentage += moved_percentage 
             if self._percentage > self._target_percentage: 
                 self._percentage = self._target_percentage
-                if self._moving_close and self._target_percentage < 100.0: 
+                if self._moving_close and self._target_percentage < 1.0: 
                     logging.debug("Rollershutter: stopping moving close, as target percentage reached")
                     self.Stop()
                 else: 
