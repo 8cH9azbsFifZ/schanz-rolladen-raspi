@@ -8,6 +8,7 @@ logging.basicConfig(level=logging.DEBUG, format='Rollershutter(%(threadName)-10s
 
 class Rollershutter():
     def __init__(self, TimeOpen = 53. , TimeClose = 53., MQTThostname = "t20", mqtt_port=1883, FHEMhostname = "minicul-raspi", fhem_port=8083, RollershutterName="Test1", Simulation = False):
+        # Simulation mode for debugging
         self._simulation = Simulation
         if self._simulation:
             logging.debug("Simulation Mode: On")
@@ -129,7 +130,7 @@ class Rollershutter():
             self._percentage -= moved_percentage 
             if self._percentage < self._target_percentage: 
                 self._percentage = self._target_percentage
-                if self._moving_open and not self._target_percentage == 0.0:
+                if self._moving_open and self._target_percentage > 0.0:
                     self.Stop()
                 else:
                     self._moving_open = False
