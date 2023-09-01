@@ -136,12 +136,6 @@ class Rollershutter():
                     self._moving_open = False
                 self._update_percentage (self._percentage)
 
-        # Set status of final positions
-        if self._percentage == 0.0:
-            self._update_state("open")
-        if self._percentage == 100.0:
-            self._update_state("closed")
-
         
     def Close(self, target_percent = 1.0):
         logging.debug("Rollershutter: close")
@@ -186,6 +180,12 @@ class Rollershutter():
             self._calc_current_percentage()
             if self._moving_close or self._moving_open:
                 self._update_percentage (self._percentage)
+
+            # Set status of final positions
+            if self._percentage == 0.0:
+                self._update_state("open")
+            if self._percentage == 100.0:
+                self._update_state("closed")
 
     def _press_button_open(self):
         open_command = "set sigduino sendMsg P46#111010101110001010#R10"
