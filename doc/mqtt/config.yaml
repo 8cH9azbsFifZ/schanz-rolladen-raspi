@@ -1,6 +1,6 @@
 
 mqtt:
-  host: localhost
+  host: t20
   port: 1883
   client-id: mqtt-panel
 

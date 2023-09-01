@@ -100,6 +100,8 @@ class Rollershutter():
                 self.SetPercent(percent)# internally we use range [0,1], but externally [0,100]
             else:
                 logging.debug("  parameter not in range: " + msg.payload.decode())
+        elif msg.payload.decode() == "Close":
+            logging.debug("  no parameter given - skipped: " + msg.payload.decode())
         else:
             logging.debug("  parameter not valid: " + msg.payload.decode())
 
