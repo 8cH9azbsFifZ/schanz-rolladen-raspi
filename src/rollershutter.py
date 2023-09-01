@@ -32,7 +32,7 @@ class Rollershutter():
         logging.debug("Starting rollershutter logic for: " + RollershutterName + " with time open " + str(TimeOpen) + " and time close " + str(TimeClose))
         self.Name = RollershutterName
         self._target_percentage = 0
-        self._moving_open = False # Current movement upwards?
+        self._moving_open = False
         self._moving_close = False 
         self._time_open = TimeOpen
         self._velocity_open = 1./TimeOpen
