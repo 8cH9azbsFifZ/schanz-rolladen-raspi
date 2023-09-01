@@ -15,6 +15,8 @@ The following topics will be used:
 | State         | rollershutter/Test1/state            | open, closed, opening, closing, stopped |
 | Position      | rollershutter/Test1/percentage       | 0-100 |
 
++ 0% == Open, 100% == Closed
+
 Thus this module is compatible with HomeAssistant and OpenHab.
 
 ![minicul](doc/img/minicul.png)

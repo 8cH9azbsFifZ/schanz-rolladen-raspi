@@ -130,6 +130,13 @@ class Rollershutter():
                 else:
                     self._moving_open = False
                 self._update_percentage (self._percentage)
+
+        
+        if self._percentage == 0.0:
+            self._update_state("open")
+        if self._percentage == 100.0:
+            self._update_state("closed")
+
         
     def Close(self, target_percent = 1.0):
         logging.debug("Rollershutter: close")
