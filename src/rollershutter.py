@@ -186,7 +186,7 @@ class Rollershutter():
             # Set status of final positions
             if self._percentage == 0.0:
                 self._update_state("open")
-            if self._percentage == 100.0:
+            if self._percentage == 1.0:
                 self._update_state("closed")
 
     def _press_button_open(self):
