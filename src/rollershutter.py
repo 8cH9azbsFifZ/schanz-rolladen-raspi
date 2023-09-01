@@ -100,7 +100,7 @@ class Rollershutter():
                 self.SetPercent(percent)# internally we use range [0,1], but externally [0,100]
             else:
                 logging.debug("  parameter not in range: " + msg.payload.decode())
-        elif msg.payload.decode() == "Close":
+        elif msg.payload.decode() == "": # no parameter given
             logging.debug("  no parameter given - skipped: " + msg.payload.decode())
         else:
             logging.debug("  parameter not valid: " + msg.payload.decode())
@@ -110,6 +110,8 @@ class Rollershutter():
         self._time_t0 = self._time_t1
         self._time_t1 = curtime
         dt = self._time_t1 - self._time_t0
+
+        # Update estimated positions - moving to closed state
         if self._moving_close:
             moved_percentage = dt * self._velocity_close
             self._percentage += moved_percentage 
@@ -120,6 +122,8 @@ class Rollershutter():
                 else: 
                     self._moving_close = False
                 self._update_percentage (self._percentage)
+
+        # Update estimated positions - moving to open state
         if self._moving_open:
             moved_percentage = dt * self._velocity_open
             self._percentage -= moved_percentage 
@@ -131,7 +135,7 @@ class Rollershutter():
                     self._moving_open = False
                 self._update_percentage (self._percentage)
 
-        
+        # Set status of final positions
         if self._percentage == 0.0:
             self._update_state("open")
         if self._percentage == 100.0:
