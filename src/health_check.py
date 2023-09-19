@@ -6,6 +6,7 @@ import os
 
 ## FIXME: Simplify this script
 
+# Check if connection to FHEM container working
 
 logging.basicConfig(level=logging.DEBUG, format='Rollershutter(%(threadName)-10s) %(message)s')
 
