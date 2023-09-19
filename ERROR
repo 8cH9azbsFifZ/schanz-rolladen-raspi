@@ -1,0 +1,4 @@
+fhem_1                  | 2023.09.19 12:04:23.321 3: FHEMWEB WEB CSRF error: csrf_243403190925323 ne csrf_413335167067271 for client WEB_172.18.0.1_41352 / command set sigduino sendMsg P46#111010101110001010#R10. For details see the csrfToken FHEMWEB attribute.
+
+schanz-rolladen-mqtt_1  | urllib.error.HTTPError: HTTP Error 400: Bad Request
+
