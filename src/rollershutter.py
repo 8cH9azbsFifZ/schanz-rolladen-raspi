@@ -3,11 +3,12 @@ import paho.mqtt.client as mqtt
 import logging
 import fhem
 import os
+import RPi.GPIO as GPIO
 
 logging.basicConfig(level=logging.DEBUG, format='Rollershutter(%(threadName)-10s) %(message)s')
 
 class Rollershutter():
-    def __init__(self, TimeOpen = 53. , TimeClose = 53., MQTThostname = "t20", mqtt_port=1883, FHEMhostname = "minicul-raspi", fhem_port=8083, RollershutterName="Test1", Simulation = False):
+    def __init__(self, TimeOpen = 53. , TimeClose = 53., MQTThostname = "t20", mqtt_port=1883, FHEMhostname = "minicul-raspi", fhem_port=8083, RollershutterName="Test1", Simulation = False, UseFhem = True, PIN_BCM_Up = 23, PIN_BCM_Down = 24, UseRelais = False):
         # Simulation mode for debugging
         self._simulation = Simulation
         if self._simulation:
@@ -16,7 +17,9 @@ class Rollershutter():
             logging.debug("Simulation Mode: Off")
 
         # Connect to FHEM
+        # FIXME: use fhem
         logging.debug("Starting FHEM connection to: " + FHEMhostname + " on port " + str(fhem_port))
+        self._use_fhem = UseFhem
         self._fhem = fhem.Fhem(FHEMhostname, protocol="http", port=fhem_port)
         self._setup_sigduino_fhem()
 
@@ -27,6 +30,19 @@ class Rollershutter():
         self._client.on_connect = self._on_connect
         self._client.on_message = self._on_message
         self._samplingrate = 0.01 # delay for the core loop 
+
+        # Configure PINS (USB Interface)
+        self._use_relais = UseRelais
+        self._relais_sw_up_pin = PIN_BCM_Up 
+        self._relais_sw_down_pin = PIN_BCM_Down 
+        self._sw_press_duration = .5 # 1 second press the buttons before release
+        if self._use_relais:
+            GPIO.setmode(GPIO.BCM)
+            time.sleep(1)
+            GPIO.setup(self._relais_sw_up_pin, GPIO.OUT) 
+            time.sleep(1)
+            GPIO.setup(self._relais_sw_down_pin, GPIO.OUT) 
+            time.sleep(1)
 
         # Current state
         logging.debug("Starting rollershutter logic for: " + RollershutterName + " with time open " + str(TimeOpen) + " and time close " + str(TimeClose))
@@ -47,7 +63,7 @@ class Rollershutter():
         self._time_t1 = time.time()
 
     def _setup_sigduino_fhem(self):
-        if not self._simulation:
+        if not self._simulation: # FIXME use fhem variable
             self._fhem.send_cmd("define sigduino SIGNALduino /dev/ttyUSB0@57600") # FIXME: make configurable
             self._fhem.send_cmd("attr sigduino hardware miniculCC1101") # FIXME: make configurable
             self._fhem.send_cmd("attr sigduino verbose 4") # only needed during reverse engineering
@@ -199,24 +215,54 @@ class Rollershutter():
 
     def _press_button_open(self):
         open_command = "set sigduino sendMsg P46#111010101110001010#R10"
-        if not self._simulation:
+        if self._use_fhem: 
             self._fhem.send_cmd(open_command) 
+        if self._use_relais:
+            self._press_button_open_relais()
         
     def _press_button_close(self):
         close_command = "set sigduino sendMsg P46#111010101110001000#R10"
-        if not self._simulation:
+        if self._use_fhem: 
             self._fhem.send_cmd(close_command) 
+        if self._use_relais:
+            self._press_button_close_relais()
+
+    def _relais_on(self, pin):
+        GPIO.output(pin, GPIO.LOW)    
+        
+    def _relais_off(self, pin):
+        GPIO.output(pin, GPIO.HIGH)
+
+    def _press_button_close_relais(self):
+        logging.debug("Send button close signal using relais")
+        self._relais_on(self._relais_sw_down_pin)
+        time.sleep(self._sw_press_duration)
+        self._relais_off(self._relais_sw_down_pin)
+
+    def _press_button_open_relais(self):
+        logging.debug("Send button open signal using relais")
+        self._relais_on(self._relais_sw_up_pin)
+        time.sleep(self._sw_press_duration)
+        self._relais_off(self._relais_sw_up_pin)
+
 
 if __name__ == "__main__":
     vMQTT_HOST = os.getenv("MQTT_HOST", "t20")
     vMQTT_PORT = int(os.getenv("MQTT_PORT", 1883))
+    vUSEFHEM = os.getenv("USEFHEM") # FIXME: default
     vFHEM_HOST = os.getenv("FHEM_HOST", "minicul-raspi")
     vFHEM_PORT = int(os.getenv("FHEM_PORT", 8083))
     vTIME_OPEN = int(os.getenv("TIME_OPEN", 53))
     vTIME_CLOSE = int(os.getenv("TIME_CLOSE", 53))
     vROLLERSHUTTER_NAME = os.getenv("ROLLERSHUTTER_NAME", "Test1")
-    vSIMULATION = os.getenv("SIMULATION")
+    vSIMULATION = os.getenv("SIMULATION")# FIXME: default
+    vUSERELAIS = os.getenv("USERELAIS")# FIXME: default
+    vPIN_BCM_Up = int(os.getenv("PIN_BCM_Up", 23))
+    vPIN_BCM_Down = int(os.getenv("PIN_BCM_Down", 24))
 
-    r = Rollershutter(TimeOpen=vTIME_OPEN, TimeClose=vTIME_CLOSE, RollershutterName=vROLLERSHUTTER_NAME, MQTThostname=vMQTT_HOST, mqtt_port=vMQTT_PORT, FHEMhostname=vFHEM_HOST, fhem_port=vFHEM_PORT, Simulation=vSIMULATION)
+
+    r = Rollershutter(TimeOpen=vTIME_OPEN, TimeClose=vTIME_CLOSE, RollershutterName=vROLLERSHUTTER_NAME, \
+                      MQTThostname=vMQTT_HOST, mqtt_port=vMQTT_PORT, FHEMhostname=vFHEM_HOST, fhem_port=vFHEM_PORT, \
+                        Simulation=vSIMULATION, UseFhem=vUSEFHEM, UseRelais=vUSERELAIS, PIN_BCM_Up=vPIN_BCM_Up, PIN_BCM_Down=vPIN_BCM_Down)
 
     r._core_loop()
