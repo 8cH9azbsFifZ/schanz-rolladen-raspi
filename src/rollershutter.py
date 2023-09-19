@@ -223,6 +223,7 @@ class Rollershutter():
             self._press_button_open_relais()
         
     def _press_button_close(self):
+        # FIXME: sometimes this command stops working, until we press buttons on the original remote?
         close_command = "set sigduino sendMsg P46#111010101110001000#R10"
         if self._use_fhem: 
             self._fhem.send_cmd(close_command) 
