@@ -257,8 +257,8 @@ if __name__ == "__main__":
     vROLLERSHUTTER_NAME = os.getenv("ROLLERSHUTTER_NAME", "Test1")
     vSIMULATION = os.getenv("SIMULATION")# FIXME: default
     vUSERELAIS = os.getenv("USERELAIS")# FIXME: default
-    vPIN_BCM_Up = int(os.getenv("PIN_BCM_Up", 23))
-    vPIN_BCM_Down = int(os.getenv("PIN_BCM_Down", 24))
+    vPIN_BCM_Up = int(os.getenv("PIN_BCM_UP", 23))
+    vPIN_BCM_Down = int(os.getenv("PIN_BCM_DOWN", 24))
 
 
     r = Rollershutter(TimeOpen=vTIME_OPEN, TimeClose=vTIME_CLOSE, RollershutterName=vROLLERSHUTTER_NAME, \

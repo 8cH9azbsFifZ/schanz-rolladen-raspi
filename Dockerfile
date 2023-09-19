@@ -14,6 +14,8 @@ ENV FHEM_PORT 8083
 ENV TIME_OPEN 53
 ENV TIME_CLOSE 53 
 ENV ROLLERSHUTTER_NAME Test1
+ENV PIN_BCM_UP 23
+ENV PIN_BCM_DOWN 24
 
 HEALTHCHECK CMD ["python", "health_check.py"]
 CMD ["python", "rollershutter.py"]
