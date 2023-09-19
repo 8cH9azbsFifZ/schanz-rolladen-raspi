@@ -18,7 +18,7 @@ class Rollershutter():
         # Connect to FHEM
         logging.debug("Starting FHEM connection to: " + FHEMhostname + " on port " + str(fhem_port))
         self._fhem = fhem.Fhem(FHEMhostname, protocol="http", port=fhem_port)
-        self._setup_signuino_fhem()
+        self._setup_sigduino_fhem()
 
         # Connect to MQTT broker
         logging.debug("Starting MQTT connection to: " + MQTThostname + " on port " + str(mqtt_port))
@@ -46,11 +46,19 @@ class Rollershutter():
         self._time_t0 = time.time()
         self._time_t1 = time.time()
 
-    def _setup_signuino_fhem(self):
+    def _setup_sigduino_fhem(self):
         if not self._simulation:
             self._fhem.send_cmd("define sigduino SIGNALduino /dev/ttyUSB0@57600") # FIXME: make configurable
             self._fhem.send_cmd("attr sigduino hardware miniculCC1101") # FIXME: make configurable
             #"attr sigduino verbose 4" # only needed during reverse engineering
+
+    def _check_connection_sigduino_fhem(self):
+        state = self._fhem.get_device_reading("sigduino")
+        return_code = len(state)  # 0 if Query had no result
+        if return_code == 0:
+            return False
+        else:
+            return True
 
     def _update_state(self, state):
         self._state = state
