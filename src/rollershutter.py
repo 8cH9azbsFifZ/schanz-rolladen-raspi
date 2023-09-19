@@ -20,6 +20,7 @@ class Rollershutter():
         # FIXME: use fhem
         logging.debug("Starting FHEM connection to: " + FHEMhostname + " on port " + str(fhem_port))
         self._use_fhem = UseFhem
+        logging.debug("Using FHEM? " + str(UseFhem))
         self._fhem = fhem.Fhem(FHEMhostname, protocol="http", port=fhem_port)
         self._setup_sigduino_fhem()
 
@@ -33,6 +34,7 @@ class Rollershutter():
 
         # Configure PINS (USB Interface)
         self._use_relais = UseRelais
+        logging.debug("Using Relais? " + str(UseRelais))
         self._relais_sw_up_pin = PIN_BCM_Up 
         self._relais_sw_down_pin = PIN_BCM_Down 
         self._sw_press_duration = .5 # 1 second press the buttons before release
