@@ -50,7 +50,7 @@ class Rollershutter():
         if not self._simulation:
             self._fhem.send_cmd("define sigduino SIGNALduino /dev/ttyUSB0@57600") # FIXME: make configurable
             self._fhem.send_cmd("attr sigduino hardware miniculCC1101") # FIXME: make configurable
-            #"attr sigduino verbose 4" # only needed during reverse engineering
+            self._fhem.send_cmd("attr sigduino verbose 4") # only needed during reverse engineering
 
     def _check_connection_sigduino_fhem(self):
         state = self._fhem.get_device_reading("sigduino")

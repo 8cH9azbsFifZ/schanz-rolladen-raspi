@@ -12,16 +12,17 @@ sudo avrdude -c arduino -b57600 -P /dev/ttyUSB0 -p atmega328p -vv -U SIGNALDuino
 picocom /dev/ttyUSB0 -b 57600
 - https://github.com/RFD-FHEM/SIGNALDuino/wiki/Commands
 
+## Devices
+/dev/ttyUSB0@57600
+/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0
+
+
+# Reverse Engineering Protocol
 
 ### With FHEM
-
-
-cf. Tedsen_SKX2xx
-
-
-deviceCode = 1FFF1F0
-protocol 46
-
+- cf. Tedsen_SKX2xx
+- deviceCode = 1FFF1F0
+- protocol 46
 
 ### Open
 set sigduino sendMsg P46#111010101110001010#R10
@@ -57,8 +58,6 @@ https://github.com/fhem/fhem-docker/blob/dev/docker-compose.yml
 https://www.fhemwiki.de/wiki/SIGNALduino
 https://www.fhemwiki.de/wiki/Unbekannte_Funkprotokolle#Ansatz_1_-_Versuchen
 https://github.com/RFD-FHEM/SIGNALDuino/issues/293
-/dev/ttyUSB0@57600
 
-/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0
 
 
