@@ -252,7 +252,7 @@ class Rollershutter():
 if __name__ == "__main__":
     vMQTT_HOST = os.getenv("MQTT_HOST", "t20")
     vMQTT_PORT = int(os.getenv("MQTT_PORT", 1883))
-    vUSEFHEM = os.getenv("USEFHEM") # FIXME: default
+    vUSEFHEM = True # FIXME #os.getenv("USEFHEM") # FIXME: default
     vFHEM_HOST = os.getenv("FHEM_HOST", "minicul-raspi")
     vFHEM_PORT = int(os.getenv("FHEM_PORT", 8083))
     vTIME_OPEN = int(os.getenv("TIME_OPEN", 53))
