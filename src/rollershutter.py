@@ -268,6 +268,6 @@ if __name__ == "__main__":
 
     r = Rollershutter(TimeOpen=vTIME_OPEN, TimeClose=vTIME_CLOSE, RollershutterName=vROLLERSHUTTER_NAME, \
                       MQTThostname=vMQTT_HOST, mqtt_port=vMQTT_PORT, FHEMhostname=vFHEM_HOST, fhem_port=vFHEM_PORT, \
-                        Simulation=vSIMULATION, UseFhem=vUSEFHEM, UseRelais=vUSERELAIS, PIN_BCM_Up=vPIN_BCM_Up, PIN_BCM_Down=vPIN_BCM_Down)
+                        Simulation=vSIMULATION, UseFhem=True, UseRelais=False, PIN_BCM_Up=vPIN_BCM_Up, PIN_BCM_Down=vPIN_BCM_Down)
 
     r._core_loop()
