@@ -4,6 +4,9 @@ import logging
 import fhem
 import os
 
+## FIXME: Simplify this script
+
+
 logging.basicConfig(level=logging.DEBUG, format='Rollershutter(%(threadName)-10s) %(message)s')
 
 class Rollershutter():
