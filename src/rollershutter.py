@@ -43,6 +43,8 @@ class Rollershutter():
             time.sleep(1)
             GPIO.setup(self._relais_sw_down_pin, GPIO.OUT) 
             time.sleep(1)
+            self._relais_off(self._relais_sw_up_pin)
+            self._relais_off(self._relais_sw_down_pin)
 
         # Current state
         logging.debug("Starting rollershutter logic for: " + RollershutterName + " with time open " + str(TimeOpen) + " and time close " + str(TimeClose))
