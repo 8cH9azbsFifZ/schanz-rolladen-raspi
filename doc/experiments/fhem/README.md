@@ -2,7 +2,6 @@
 
 ** Scrapbook **
 
-- Experimental relais controls on pins 16 and 18
 - Reverse engineering using fhem, minicul and signalduino
 
 
