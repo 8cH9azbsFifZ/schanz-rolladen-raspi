@@ -3,7 +3,7 @@ import paho.mqtt.client as mqtt
 import logging
 import fhem
 import os
-import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO # FIXME: only for raspi?
 
 logging.basicConfig(level=logging.DEBUG, format='Rollershutter(%(threadName)-10s) %(message)s')
 
