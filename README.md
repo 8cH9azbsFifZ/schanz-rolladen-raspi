@@ -31,15 +31,15 @@ Configure the following variables in the [docker-compose.yml](doc/example_config
 ### Testing the installation
 + Install mosquitto, i.e. on osx: `brew install mosquitto` 
 + Optionally use the dashboard using docker-compose described [here](doc/mqtt/docker-compose.yml)
-+ Set position topic: 0-100 `mosquitto_pub -h mqtt -t rollershutter/control_position/Test1 -m 30`
++ Set position topic: 0-100 `mosquitto_pub -h minicul-raspi -t rollershutter/control_position/Test1 -m 30`
 + Set control topic: Open, Close, Stop
 ```
-mosquitto_pub -h mqtt -t rollershutter/control/Test1 -m Open
-mosquitto_pub -h mqtt -t rollershutter/control/Test1 -m Close
-mosquitto_pub -h mqtt -t rollershutter/control/Test1 -m Stop
+mosquitto_pub -h minicul-raspi -t rollershutter/control/Test1 -m Open
+mosquitto_pub -h minicul-raspi -t rollershutter/control/Test1 -m Close
+mosquitto_pub -h minicul-raspi -t rollershutter/control/Test1 -m Stop
 ```
-+ State topic: open, closed, opening, closing, stopped - `mosquitto_sub -h mqtt -t rollershutter/Test1/state`
-+ Position topic: 0-100 - `mosquitto_sub -h mqtt -t rollershutter/Test1/percentage`
++ State topic: open, closed, opening, closing, stopped - `mosquitto_sub -h minicul-raspi -t rollershutter/Test1/state`
++ Position topic: 0-100 - `mosquitto_sub -h minicul-raspi -t rollershutter/Test1/percentage`
 
 ## Configuration for HomeAssistant
 + Install the MQTT integration and provide your server
