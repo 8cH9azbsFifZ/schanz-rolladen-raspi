@@ -143,32 +143,34 @@ class Rollershutter():
         # Update estimated positions - moving to closed state
         if self._moving_close:
             moved_percentage = dt * self._velocity_close
-            self._percentage += moved_percentage 
-            if self._percentage > self._target_percentage: 
+            self._percentage += moved_percentage
+            if self._percentage > self._target_percentage:
                 self._percentage = self._target_percentage
-                if self._moving_close and self._target_percentage < 1.0: 
+                if self._target_percentage < 1.0:
                     logging.debug("Rollershutter: stopping moving close, as target percentage reached")
                     self.Stop()
-                else: 
+                else:
                     self._moving_close = False
-                self._update_percentage (self._percentage)
 
         # Update estimated positions - moving to open state
-        if self._moving_open:
+        elif self._moving_open:
             moved_percentage = dt * self._velocity_open
-            self._percentage -= moved_percentage 
-            if self._percentage < self._target_percentage: 
+            self._percentage -= moved_percentage
+            if self._percentage < self._target_percentage:
                 self._percentage = self._target_percentage
-                if self._moving_open and self._target_percentage > 0.0:
+                if self._target_percentage > 0.0:
                     logging.debug("Rollershutter: stopping moving open, as target percentage reached")
                     self.Stop()
                 else:
                     self._moving_open = False
-                self._update_percentage (self._percentage)
+
+        # Clamp percentage to valid range [0, 1]
+        self._percentage = max(0.0, min(1.0, self._percentage))
 
         
     def Close(self, target_percent = 1.0):
         logging.debug("Rollershutter: close")
+        self._moving_open = False
         self._moving_close = True
         self._update_state("closing")
         self._target_percentage = target_percent
@@ -176,6 +178,7 @@ class Rollershutter():
 
     def Open(self, target_percent = 0.0):
         logging.debug("Rollershutter: open")
+        self._moving_close = False
         self._moving_open = True
         self._update_state("opening")
         self._target_percentage = target_percent
@@ -183,38 +186,43 @@ class Rollershutter():
 
     def Stop(self):
         logging.debug("Rollershutter: stop")
-        self._update_state("stopped")
         if self._moving_open:
             logging.debug("Rollershutter: stop - by pressing close button")
             self._press_button_close()
-            self._moving_open = False
         elif self._moving_close:
             logging.debug("Rollershutter: stop - by pressing open button")
             self._press_button_open()
-            self._moving_close = False      
         else:
             logging.debug("Rollershutter: not moving")
+        self._moving_open = False
+        self._moving_close = False
+        self._update_state("stopped")
 
     def SetPercent(self, percentage):# internally we use range [0,1], but externally [0,100]
         logging.debug("Rollershutter: set to percent " + str(percentage) + " internally [0,1]")
         diff_percent = self._percentage - percentage
         if diff_percent < 0:
             self.Close(target_percent=percentage)
-        if diff_percent > 0:
+        elif diff_percent > 0:
             self.Open(target_percent=percentage)
 
     def _core_loop(self):
         logging.debug("Start core loop")
+        self._last_published_percentage = -1
         while True:
-            self._client.loop(self._samplingrate) #blocks for 100ms (or whatever variable given, default 1s)
+            self._client.loop(self._samplingrate) #blocks for 10ms (or whatever variable given, default 1s)
             self._calc_current_percentage()
             if self._moving_close or self._moving_open:
-                self._update_percentage (self._percentage)
+                # Only publish when the integer percentage changes (avoids MQTT flooding)
+                current_int_pct = int(self._percentage * 100.)
+                if current_int_pct != self._last_published_percentage:
+                    self._update_percentage(self._percentage)
+                    self._last_published_percentage = current_int_pct
 
-            # Set status of final positions
-            if self._percentage == 0.0:
+            # Set status of final positions (with tolerance for float comparison)
+            if self._percentage <= 0.001 and self._state != "open" and not self._moving_open:
                 self._update_state("open")
-            if self._percentage == 1.0:
+            elif self._percentage >= 0.999 and self._state != "closed" and not self._moving_close:
                 self._update_state("closed")
 
     def _press_button_open(self):
