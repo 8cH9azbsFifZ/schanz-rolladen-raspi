@@ -26,7 +26,25 @@ class SerialDiscoveryTests(unittest.TestCase):
         ports = [{"device": "/dev/ttyS0", "description": "UART"}]
         self.assertIsNone(choose_minicul_device(ports))
 
+    def test_prefers_vid_pid_match_over_generic_usb_serial(self):
+        ports = [
+            {
+                "device": "/dev/ttyUSB0",
+                "description": "USB Serial Adapter",
+                "hwid": "USB VID:PID=0403:6001",
+                "vid": 0x0403,
+                "pid": 0x6001,
+            },
+            {
+                "device": "/dev/ttyUSB1",
+                "description": "USB Serial",
+                "hwid": "USB VID:PID=1A86:7523",
+                "vid": 0x1A86,
+                "pid": 0x7523,
+            },
+        ]
+        self.assertEqual(choose_minicul_device(ports), "/dev/ttyUSB1")
+
 
 if __name__ == "__main__":
     unittest.main()
-

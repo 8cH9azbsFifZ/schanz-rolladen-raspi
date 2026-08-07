@@ -83,7 +83,29 @@ class MiniculTransportTests(unittest.TestCase):
             transport.send_payload("P46#TEST#R10")
         self.assertFalse(conn.is_open)
 
+    def test_reconnects_after_failed_write(self):
+        fail_conn = FailingWriteSerial("/dev/ttyUSB0", 57600)
+        ok_conn = FakeSerial("/dev/ttyUSB0", 57600)
+        calls = {"count": 0}
+
+        def serial_factory(*_args, **_kwargs):
+            calls["count"] += 1
+            if calls["count"] == 1:
+                return fail_conn
+            return ok_conn
+
+        transport = MiniculTransport(
+            device="/dev/ttyUSB0",
+            baudrate=57600,
+            serial_factory=serial_factory,
+        )
+
+        with self.assertRaises(MiniculTransportError):
+            transport.send_payload("P46#FAIL#R10")
+
+        transport.send_payload("P46#OK#R10")
+        self.assertEqual(ok_conn.writes, [b"sendMsg P46#OK#R10\n"])
+
 
 if __name__ == "__main__":
     unittest.main()
-
