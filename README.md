@@ -62,6 +62,41 @@ mosquitto_pub -h <host> -t rollershutter/control/Test1 -m Stop
 + Install the MQTT integration and provide your server
 + Copy and adjust the configuration in [HA Config](doc/example_configurations/homeassistant-config.yaml) to your setup
 
+## Native Home Assistant integration (HACS, experimental, without FHEM)
+This repository now contains a native custom integration at `custom_components/schanz_rolladen`.
+
+### What it does
++ Exposes a native `cover` entity in Home Assistant.
++ Sends Open/Close commands directly to the Minicul USB stick over serial.
++ Uses time-based position estimation (0=open, 100=closed), including `set position`.
+
+### Install with HACS (manual custom repository)
+1. Add this repository as a custom HACS repository (`Integration` type).
+2. Install **Schanz Rolladen** from HACS.
+3. Restart Home Assistant.
+4. Add integration via **Settings -> Devices & Services -> Add Integration**.
+
+### Required setup on Home Assistant Green
++ Plug in the Minicul USB stick.
++ Use a stable serial path if available (recommended): `/dev/serial/by-id/...`
++ Typical defaults are:
+  - Baudrate: `57600`
+  - Open command: `P46#111010101110001010#R10`
+  - Close command: `P46#111010101110001000#R10`
+  - Transport prefix: `sendMsg `
+  - Transport suffix: newline (`\n`)
+
+### Migration from MQTT/FHEM
+1. Keep your existing MQTT/FHEM setup running while you add the native integration.
+2. Add the native `Schanz Rolladen` entity and verify Open/Close/Stop.
+3. Update automations/dashboard cards to target the native cover entity.
+4. Remove MQTT cover config and stop the FHEM bridge container after successful migration.
+
+### Troubleshooting
++ Serial device not found: re-check path in integration options, prefer `/dev/serial/by-id/...`.
++ Commands not working: verify command prefix/suffix and protocol strings in options.
++ Position mismatch: calibrate `time_open` and `time_close` values for your shutter.
+
 ## Configuration for OpenHAB
 + Install the MQTT binding
 + Copy and adjust the things configuration [Things](doc/example_configurations/openhab.things)

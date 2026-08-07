@@ -1,0 +1,17 @@
+{
+  "domain": "schanz_rolladen",
+  "name": "Schanz Rolladen",
+  "codeowners": [
+    "@gerolfziegenhain"
+  ],
+  "config_flow": true,
+  "documentation": "https://github.com/8cH9azbsFifZ/schanz-rolladen-raspi",
+  "iot_class": "local_push",
+  "loggers": [
+    "custom_components.schanz_rolladen"
+  ],
+  "requirements": [
+    "pyserial>=3.5"
+  ],
+  "version": "0.1.0"
+}
