@@ -5,6 +5,7 @@ from homeassistant.core import callback
 
 from .const import (
     CONF_BAUDRATE,
+    CONF_AUTO_DETECT,
     CONF_COMMAND_CLOSE,
     CONF_COMMAND_OPEN,
     CONF_DEVICE,
@@ -15,6 +16,7 @@ from .const import (
     CONF_TRANSPORT_SUFFIX,
     CONF_UPDATE_INTERVAL,
     DEFAULT_BAUDRATE,
+    DEFAULT_AUTO_DETECT,
     DEFAULT_COMMAND_CLOSE,
     DEFAULT_COMMAND_OPEN,
     DEFAULT_DEVICE,
@@ -26,6 +28,7 @@ from .const import (
     DEFAULT_UPDATE_INTERVAL,
     DOMAIN,
 )
+from .serial_discovery import guess_minicul_device
 from .validation import validate_config
 
 
@@ -35,6 +38,7 @@ def _user_schema(defaults):
             vol.Required(CONF_NAME, default=defaults.get(CONF_NAME, DEFAULT_NAME)): str,
             vol.Required(CONF_DEVICE, default=defaults.get(CONF_DEVICE, DEFAULT_DEVICE)): str,
             vol.Required(CONF_BAUDRATE, default=defaults.get(CONF_BAUDRATE, DEFAULT_BAUDRATE)): int,
+            vol.Required(CONF_AUTO_DETECT, default=defaults.get(CONF_AUTO_DETECT, DEFAULT_AUTO_DETECT)): bool,
             vol.Required(CONF_TIME_OPEN, default=defaults.get(CONF_TIME_OPEN, DEFAULT_TIME_OPEN)): vol.Coerce(float),
             vol.Required(CONF_TIME_CLOSE, default=defaults.get(CONF_TIME_CLOSE, DEFAULT_TIME_CLOSE)): vol.Coerce(float),
             vol.Required(CONF_UPDATE_INTERVAL, default=defaults.get(CONF_UPDATE_INTERVAL, DEFAULT_UPDATE_INTERVAL)): vol.Coerce(float),
@@ -51,9 +55,20 @@ class SchanzRolladenConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def async_step_user(self, user_input=None):
         errors = {}
+        defaults = user_input or {}
+        if not defaults:
+            detected = await self.hass.async_add_executor_job(guess_minicul_device)
+            if detected:
+                defaults = {CONF_DEVICE: detected}
+
         if user_input is not None:
             try:
-                config = validate_config(user_input)
+                resolved = dict(user_input)
+                if resolved.get(CONF_AUTO_DETECT):
+                    detected = await self.hass.async_add_executor_job(guess_minicul_device)
+                    if detected:
+                        resolved[CONF_DEVICE] = detected
+                config = validate_config(resolved)
             except ValueError:
                 errors["base"] = "invalid_config"
             else:
@@ -70,10 +85,11 @@ class SchanzRolladenConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                         CONF_TRANSPORT_PREFIX: config.transport_prefix,
                         CONF_TRANSPORT_SUFFIX: config.transport_suffix,
                         CONF_UPDATE_INTERVAL: config.update_interval,
+                        CONF_AUTO_DETECT: config.auto_detect_device,
                     },
                 )
 
-        return self.async_show_form(step_id="user", data_schema=_user_schema(user_input or {}), errors=errors)
+        return self.async_show_form(step_id="user", data_schema=_user_schema(defaults), errors=errors)
 
     @staticmethod
     @callback
@@ -92,7 +108,12 @@ class SchanzRolladenOptionsFlow(config_entries.OptionsFlow):
 
         if user_input is not None:
             try:
-                config = validate_config(user_input)
+                resolved = dict(user_input)
+                if resolved.get(CONF_AUTO_DETECT):
+                    detected = await self.hass.async_add_executor_job(guess_minicul_device)
+                    if detected:
+                        resolved[CONF_DEVICE] = detected
+                config = validate_config(resolved)
             except ValueError:
                 errors["base"] = "invalid_config"
             else:
@@ -109,8 +130,8 @@ class SchanzRolladenOptionsFlow(config_entries.OptionsFlow):
                         CONF_TRANSPORT_PREFIX: config.transport_prefix,
                         CONF_TRANSPORT_SUFFIX: config.transport_suffix,
                         CONF_UPDATE_INTERVAL: config.update_interval,
+                        CONF_AUTO_DETECT: config.auto_detect_device,
                     },
                 )
 
         return self.async_show_form(step_id="init", data_schema=_user_schema(merged_defaults), errors=errors)
-

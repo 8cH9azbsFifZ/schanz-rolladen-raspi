@@ -2,6 +2,7 @@ from dataclasses import dataclass
 
 from .const import (
     CONF_BAUDRATE,
+    CONF_AUTO_DETECT,
     CONF_COMMAND_CLOSE,
     CONF_COMMAND_OPEN,
     CONF_DEVICE,
@@ -12,6 +13,7 @@ from .const import (
     CONF_TRANSPORT_SUFFIX,
     CONF_UPDATE_INTERVAL,
     DEFAULT_BAUDRATE,
+    DEFAULT_AUTO_DETECT,
     DEFAULT_COMMAND_CLOSE,
     DEFAULT_COMMAND_OPEN,
     DEFAULT_DEVICE,
@@ -36,6 +38,7 @@ class IntegrationConfig:
     transport_prefix: str
     transport_suffix: str
     update_interval: float
+    auto_detect_device: bool
 
 
 def _non_empty_text(value, field_name):
@@ -79,6 +82,7 @@ def validate_config(config_input):
         CONF_TRANSPORT_PREFIX: DEFAULT_TRANSPORT_PREFIX,
         CONF_TRANSPORT_SUFFIX: DEFAULT_TRANSPORT_SUFFIX,
         CONF_UPDATE_INTERVAL: DEFAULT_UPDATE_INTERVAL,
+        CONF_AUTO_DETECT: DEFAULT_AUTO_DETECT,
     }
     merged.update(config_input or {})
 
@@ -93,5 +97,5 @@ def validate_config(config_input):
         transport_prefix=str(merged[CONF_TRANSPORT_PREFIX]),
         transport_suffix=str(merged[CONF_TRANSPORT_SUFFIX]),
         update_interval=_positive_number(merged[CONF_UPDATE_INTERVAL], CONF_UPDATE_INTERVAL),
+        auto_detect_device=bool(merged[CONF_AUTO_DETECT]),
     )
-

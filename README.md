@@ -79,6 +79,7 @@ This repository now contains a native custom integration at `custom_components/s
 ### Required setup on Home Assistant Green
 + Plug in the Minicul USB stick.
 + Use a stable serial path if available (recommended): `/dev/serial/by-id/...`
++ Device detection is now automatic by default (`auto_detect_device = true`), with preference for CH340/1A86 by-id paths.
 + Typical defaults are:
   - Baudrate: `57600`
   - Open command: `P46#111010101110001010#R10`

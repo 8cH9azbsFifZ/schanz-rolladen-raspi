@@ -9,6 +9,7 @@ class ValidateConfigTests(unittest.TestCase):
         self.assertEqual(config.name, "Schanz Rolladen")
         self.assertEqual(config.device, "/dev/ttyUSB0")
         self.assertEqual(config.baudrate, 57600)
+        self.assertTrue(config.auto_detect_device)
 
     def test_invalid_empty_name_raises(self):
         with self.assertRaises(ValueError):
@@ -18,7 +19,10 @@ class ValidateConfigTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             validate_config({"time_open": 0})
 
+    def test_auto_detect_flag_can_be_disabled(self):
+        config = validate_config({"auto_detect_device": False})
+        self.assertFalse(config.auto_detect_device)
+
 
 if __name__ == "__main__":
     unittest.main()
-

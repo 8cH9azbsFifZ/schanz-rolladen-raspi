@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import replace
 import logging
 import time
 from datetime import timedelta
@@ -30,6 +31,7 @@ from .const import (
 )
 from .minicul_transport import MiniculTransport, MiniculTransportError
 from .movement import ACTION_SEND_CLOSE, ACTION_SEND_OPEN, MovementModel
+from .serial_discovery import guess_minicul_device
 from .validation import validate_config
 
 _LOGGER = logging.getLogger(__name__)
@@ -43,6 +45,10 @@ async def async_setup_entry(
     merged = dict(entry.data)
     merged.update(entry.options)
     config = validate_config(merged)
+    if config.auto_detect_device:
+        detected = await hass.async_add_executor_job(guess_minicul_device)
+        if detected:
+            config = replace(config, device=detected)
     async_add_entities([SchanzRolladenCover(config)])
 
 
@@ -159,4 +165,3 @@ class SchanzRolladenCover(CoverEntity, RestoreEntity):
         except MiniculTransportError as exc:
             self._available = False
             _LOGGER.error("Failed to send Minicul command: %s", exc)
-
