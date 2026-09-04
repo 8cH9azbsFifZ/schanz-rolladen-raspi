@@ -26,11 +26,17 @@ class Rollershutter():
 
         # Connect to MQTT broker
         logging.debug("Starting MQTT connection to: " + MQTThostname + " on port " + str(mqtt_port))
+        self._mqtt_hostname = MQTThostname
+        self._mqtt_port = mqtt_port
         self._client = mqtt.Client()
-        self._client.connect(MQTThostname, mqtt_port, 60)
+        # Callbacks must be registered before connecting, otherwise the CONNACK
+        # of a fast broker can be processed before on_connect is known.
         self._client.on_connect = self._on_connect
         self._client.on_message = self._on_message
-        self._samplingrate = 0.01 # delay for the core loop 
+        self._client.on_disconnect = self._on_disconnect
+        self._connect_with_backoff(initial=True)
+        self._samplingrate = 0.01 # delay for the core loop while the shutter is moving
+        self._idle_samplingrate = 1.0 # while nothing moves there is no need to spin the CPU
 
         # Configure PINS (USB Interface)
         self._use_relais = UseRelais
@@ -58,6 +64,10 @@ class Rollershutter():
         self._velocity_open = 1./TimeOpen
         self._time_close = TimeClose
         self._velocity_close = 1./TimeClose
+        self._state = None
+        self._last_published_percentage = None
+        self._time_lastpublish = time.time()
+        self._republish_interval = 30. # keep subscribers in sync without flooding
         self._update_state("stopped")
         self._update_percentage(0, initial_state = True)
 
@@ -81,20 +91,32 @@ class Rollershutter():
             return True
 
     def _update_state(self, state):
+        changed = self._state != state
         self._state = state
-        self._sendmessage(topic="/state", message=str(self._state))
+        # Only announce real changes - see the flood note in _update_percentage.
+        if changed:
+            self._sendmessage(topic="/state", message=str(self._state))
 
     def _update_percentage(self, percentage, initial_state = False):
         if initial_state:
             self._percentage = 0
             self._percentage_t1 = 0
 
-        # TODO: display only significant state updates
-            
         self._percentage_t1 = self._percentage
         self._percentage = percentage
         percentage_0_100 = int(self._percentage*100.)
-        self._sendmessage(topic="/percentage", message=str(percentage_0_100))
+        # Publish only significant updates. Sending on every iteration flooded
+        # the broker with tens of thousands of messages per second and kept a
+        # CPU core busy: a pending write makes loop() return immediately, so the
+        # sampling timeout never takes effect.
+        if initial_state or percentage_0_100 != self._last_published_percentage:
+            self._last_published_percentage = percentage_0_100
+            self._sendmessage(topic="/percentage", message=str(percentage_0_100))
+
+    def _republish(self):
+        """ Repeat the current values, so a restarted subscriber is not left guessing """
+        self._sendmessage(topic="/state", message=str(self._state))
+        self._sendmessage(topic="/percentage", message=str(int(self._percentage*100.)))
 
     def _on_connect(self, client, userdata, flags, rc):
         """ Connect to MQTT broker and subscribe to control messages """
@@ -102,10 +124,42 @@ class Rollershutter():
         self._client.subscribe("rollershutter/control/" + self.Name)
         self._client.subscribe("rollershutter/control_position/" + self.Name)
 
+    def _on_disconnect(self, client, userdata, rc):
+        """ Log unexpected disconnects - the core loop takes care of reconnecting """
+        if rc != mqtt.MQTT_ERR_SUCCESS:
+            logging.warning("Unexpected MQTT disconnect (rc " + str(rc) + ")")
+
+    def _connect_with_backoff(self, initial=False):
+        """
+        (Re)establish the MQTT connection, retrying with exponential backoff.
+
+        This is what keeps the daemon usable after a broker outage. Without it a
+        single dropped connection silences the rollershutter permanently: the
+        process keeps running and Home Assistant still reports success, but no
+        command ever reaches the motor again.
+        """
+        delay = 1.
+        while True:
+            try:
+                if initial:
+                    self._client.connect(self._mqtt_hostname, self._mqtt_port, 60)
+                else:
+                    self._client.reconnect()
+                logging.info("MQTT connected to " + self._mqtt_hostname + ":" + str(self._mqtt_port))
+                return
+            except (OSError, mqtt.WebsocketConnectionError) as e:
+                logging.warning("MQTT connect failed (" + str(e) + ") - retrying in " + str(delay) + "s")
+                time.sleep(delay)
+                delay = min(delay * 2., 60.)
+                # A failed initial connect still leaves the broker address on the
+                # client, so from here on plain reconnects are enough.
+                initial = False
+
     def _sendmessage(self, topic="/none", message="None"):
         """ Send a message using MQTT """
         ttopic = "rollershutter/" + self.Name + topic
         mmessage = str(message)
+        self._time_lastpublish = time.time()
         self._client.publish(ttopic, mmessage)
 
     def _on_message(self, client, userdata, msg):
@@ -169,6 +223,8 @@ class Rollershutter():
         
     def Close(self, target_percent = 1.0):
         logging.debug("Rollershutter: close")
+        # Reset the time base, so the idle gap is not counted as travel time.
+        self._time_t1 = time.time()
         self._moving_close = True
         self._update_state("closing")
         self._target_percentage = target_percent
@@ -176,6 +232,8 @@ class Rollershutter():
 
     def Open(self, target_percent = 0.0):
         logging.debug("Rollershutter: open")
+        # Reset the time base, so the idle gap is not counted as travel time.
+        self._time_t1 = time.time()
         self._moving_open = True
         self._update_state("opening")
         self._target_percentage = target_percent
@@ -206,7 +264,18 @@ class Rollershutter():
     def _core_loop(self):
         logging.debug("Start core loop")
         while True:
-            self._client.loop(self._samplingrate) #blocks for 100ms (or whatever variable given, default 1s)
+            # Poll frequently while moving to keep the position estimate sharp,
+            # but stay idle otherwise instead of burning a full CPU core.
+            moving = self._moving_close or self._moving_open
+            rc = self._client.loop(self._samplingrate if moving else self._idle_samplingrate)
+            if rc != mqtt.MQTT_ERR_SUCCESS:
+                # Never keep looping on a dead connection: once the socket is
+                # gone, loop() would return the same error forever and the
+                # daemon would silently stop reacting to any command.
+                logging.warning("MQTT loop returned rc " + str(rc) + " - reconnecting")
+                self._connect_with_backoff()
+                continue
+
             self._calc_current_percentage()
             if self._moving_close or self._moving_open:
                 self._update_percentage (self._percentage)
@@ -216,6 +285,11 @@ class Rollershutter():
                 self._update_state("open")
             if self._percentage == 1.0:
                 self._update_state("closed")
+
+            # Refresh subscribers now and then, so a restarted Home Assistant
+            # learns the position without waiting for the next movement.
+            if time.time() - self._time_lastpublish >= self._republish_interval:
+                self._republish()
 
     def _press_button_open(self):
         open_command = "set sigduino sendMsg P46#111010101110001010#R10"
